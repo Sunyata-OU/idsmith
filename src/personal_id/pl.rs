@@ -23,7 +23,9 @@ pub fn generate(opts: &GenOptions, rng: &mut impl Rng) -> String {
     loop {
         let zzz: u16 = rng.gen_range(0..=999);
         let x: u8 = rng.gen_range(0..=9);
-        if (gender == Gender::Male && x % 2 == 1) || (gender == Gender::Female && x % 2 == 0) {
+        if (gender == Gender::Male && x % 2 == 1)
+            || (gender == Gender::Female && x.is_multiple_of(2))
+        {
             let base = format!("{:02}{:02}{:02}{:03}{}", y % 100, em, d, zzz, x);
             let digits: Vec<u8> = base.bytes().map(|b| b - b'0').collect();
             let s: u32 = digits

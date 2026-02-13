@@ -21,7 +21,7 @@ cargo install --path .
 ### Build from GitHub
 
 ```bash
-git clone https://github.com/tonybenoy/eu-test-data-generator.git
+git clone https://github.com/Sunyata-OU/EU-Test-Data-Generator.git
 cd eu-test-data-generator
 cargo build --release
 # Binary at target/release/eu-test-data-generator

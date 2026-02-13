@@ -115,7 +115,7 @@ pub fn validate(code: &str) -> bool {
         return false;
     }
     let upper = code.to_uppercase();
-    it_check(upper[..15].as_bytes()) == upper.as_bytes()[15] as char
+    it_check(&upper.as_bytes()[..15]) == upper.as_bytes()[15] as char
 }
 
 pub fn parse(code: &str) -> IdResult {

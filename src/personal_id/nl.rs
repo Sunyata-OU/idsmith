@@ -23,7 +23,7 @@ pub fn validate(code: &str) -> bool {
     }
     let d: Vec<u8> = code.bytes().map(|b| b - b'0').collect();
     let s: u32 = (0..8).map(|i| d[i] as u32 * (9 - i) as u32).sum();
-    (s.wrapping_sub(d[8] as u32)) % 11 == 0
+    (s.wrapping_sub(d[8] as u32)).is_multiple_of(11)
 }
 
 pub fn parse(code: &str) -> IdResult {

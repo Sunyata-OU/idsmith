@@ -722,7 +722,7 @@ fn mod_11_10_check_bytes(to_check: &[u8]) -> u8 {
     let mut nr: u32 = 10;
     for &byte in to_check {
         nr += (byte - b'0') as u32;
-        if nr % 10 != 0 {
+        if !nr.is_multiple_of(10) {
             nr %= 10;
         }
         nr = (nr * 2) % 11;

@@ -18,7 +18,9 @@ pub fn generate(opts: &GenOptions, rng: &mut impl Rng) -> String {
         } else {
             rng.gen_range(500..=999)
         };
-        if (gender == Gender::Male && ind % 2 == 0) || (gender == Gender::Female && ind % 2 == 1) {
+        if (gender == Gender::Male && ind.is_multiple_of(2))
+            || (gender == Gender::Female && ind % 2 == 1)
+        {
             continue;
         }
         let mut digits: Vec<u8> = base.bytes().map(|b| b - b'0').collect();

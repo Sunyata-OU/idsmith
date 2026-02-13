@@ -21,7 +21,9 @@ pub fn generate(opts: &GenOptions, rng: &mut impl Rng) -> String {
     let em = m + month_add((y / 100) * 100);
     loop {
         let seq: u16 = rng.gen_range(0..=999);
-        if (gender == Gender::Male && seq % 2 == 0) || (gender == Gender::Female && seq % 2 == 1) {
+        if (gender == Gender::Male && seq.is_multiple_of(2))
+            || (gender == Gender::Female && seq % 2 == 1)
+        {
             let base = format!("{:02}{:02}{:02}{:03}", y % 100, em, d, seq);
             let digits: Vec<u8> = base.bytes().map(|b| b - b'0').collect();
             let r = weighted_check(&digits, W, 11);
@@ -55,7 +57,14 @@ pub fn parse(code: &str) -> IdResult {
     };
     IdResult {
         code: code.to_string(),
-        gender: Some(if seq % 2 == 0 { "male" } else { "female" }.to_string()),
+        gender: Some(
+            if seq.is_multiple_of(2) {
+                "male"
+            } else {
+                "female"
+            }
+            .to_string(),
+        ),
         dob: Some(format!("{}-{:02}-{:02}", year, month, dd)),
         valid: validate(code),
     }

@@ -16,7 +16,7 @@ pub fn generate(opts: &GenOptions, rng: &mut impl Rng) -> String {
     loop {
         let ext: u16 = rng.gen_range(0..=9999);
         let full: u64 = format!("{}{:04}", base6, ext).parse().unwrap();
-        if full % 11 == 0 {
+        if full.is_multiple_of(11) {
             return format!("{}{:04}", base6, ext);
         }
     }
@@ -28,7 +28,7 @@ pub fn validate(code: &str) -> bool {
         return false;
     }
     let num: u64 = clean.parse().unwrap_or(1);
-    num % 11 == 0
+    num.is_multiple_of(11)
 }
 
 pub fn parse(code: &str) -> IdResult {

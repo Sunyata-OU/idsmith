@@ -7,7 +7,7 @@ description = "Generate valid test IBANs and personal ID codes for 96 countries.
 license = "MIT"
 keywords = ["iban", "test-data", "generator", "personal-id", "european"]
 categories = ["command-line-utilities", "development-tools::testing"]
-repository = "https://github.com/tonybenoy/eu-test-data-generator"
+repository = "https://github.com/Sunyata-OU/EU-Test-Data-Generator"
 
 [dependencies]
 clap = { version = "4", features = ["derive"] }
