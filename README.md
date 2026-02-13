@@ -10,6 +10,7 @@ Generate valid, checksum-correct **IBANs** and **personal ID codes** for Europea
 - **Library + CLI** — use as a Rust crate or a standalone command-line tool
 - **Checksum-validated** — every generated code passes mod-97 (IBAN) and national checksum algorithms
 - **Gender & year filters** — generate personal IDs for specific demographics
+- **CSV export** — output to stdout or directly to a file with `--csv [path]`
 
 ## Installation
 
@@ -33,6 +34,9 @@ cargo build --release
 ```toml
 [dependencies]
 eu-test-data-generator = { git = "https://github.com/Sunyata-OU/EU-Test-Data-Generator.git", default-features = false }
+
+# With CSV formatting helpers
+eu-test-data-generator = { git = "https://github.com/Sunyata-OU/EU-Test-Data-Generator.git", default-features = false, features = ["csv"] }
 ```
 
 ## CLI Usage
@@ -48,6 +52,12 @@ eu-test-data-generator iban DE 5
 
 # Generate 10 random IBANs
 eu-test-data-generator iban 10
+
+# Export as CSV to stdout
+eu-test-data-generator iban DE 5 --csv
+
+# Export as CSV to a file
+eu-test-data-generator iban DE 100 --csv ibans.csv
 ```
 
 **Output:**
@@ -69,6 +79,15 @@ AX02 8462 5859 7927 10  (valid: True)
 AE21 4623 7720 3406 6426 400  (valid: True)
 ```
 
+**CSV output:**
+```
+$ eu-test-data-generator iban DE 3 --csv
+country,iban,iban_formatted,valid
+DE,DE72902438106569462453,DE72 9024 3810 6569 4624 53,true
+DE,DE86958518594489801701,DE86 9585 1859 4489 8017 01,true
+DE,DE85188047151769010717,DE85 1880 4715 1769 0107 17,true
+```
+
 ### Personal ID Generation
 
 ```bash
@@ -83,6 +102,12 @@ eu-test-data-generator id 3 --country=IT
 
 # List all supported ID formats
 eu-test-data-generator id --list
+
+# Export as CSV to stdout
+eu-test-data-generator id 5 --country=EE --csv
+
+# Export as CSV to a file
+eu-test-data-generator id 100 --country=FI --gender=f --csv finnish_ids.csv
 ```
 
 **Output:**
@@ -100,6 +125,15 @@ IT - Codice Fiscale:
   ZDGQJT65R51C855N  (female, 1965-10-11, valid: True)
   WXVXRX67M13M412C  (male, 1967-08-13, valid: True)
   NDYXSQ43D60F707H  (female, 1943-04-20, valid: True)
+```
+
+**CSV output:**
+```
+$ eu-test-data-generator id 3 --country=FI --csv
+country,id_name,code,gender,dob,valid
+FI,Henkilotunnus,150454-612K,female,1954-04-15,true
+FI,Henkilotunnus,170171-328N,female,1971-01-17,true
+FI,Henkilotunnus,011142-293T,male,1942-11-01,true
 ```
 
 ```
@@ -194,6 +228,14 @@ registry.generate(country, &opts, rng) -> Option<String>
 registry.validate(country, code) -> Option<bool>
 registry.parse(country, code) -> Option<IdResult>
 registry.list_countries() -> Vec<(&str, &str)>
+
+// CSV (requires "csv" feature)
+csv::IBAN_HEADER                                          // "country,iban,iban_formatted,valid"
+csv::ID_HEADER                                            // "country,id_name,code,gender,dob,valid"
+csv::iban_row(iban: &str, formatted: &str, valid: bool) -> String
+csv::id_row(country: &str, id_name: &str, result: &IdResult) -> String
+csv::write_iban_csv(writer: &mut W, rows: &[(String, String, bool)]) -> io::Result<()>
+csv::write_id_csv(writer: &mut W, country: &str, id_name: &str, results: &[IdResult]) -> io::Result<()>
 ```
 
 ## Supported Countries

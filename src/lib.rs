@@ -25,3 +25,6 @@
 
 pub mod iban;
 pub mod personal_id;
+
+#[cfg(feature = "csv")]
+pub mod csv;

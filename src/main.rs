@@ -1,7 +1,9 @@
+use std::io::Write;
+
 use clap::{Parser, Subcommand};
 use rand::thread_rng;
 
-use eu_test_data_generator::{iban, personal_id};
+use eu_test_data_generator::{csv as csv_fmt, iban, personal_id};
 
 #[derive(Parser)]
 #[command(name = "eu-test-data-generator")]
@@ -20,6 +22,9 @@ enum Commands {
         /// Number of IBANs to generate
         #[arg(default_value = "1")]
         count: u32,
+        /// Export as CSV (optionally to a file path)
+        #[arg(long, num_args = 0..=1, default_missing_value = "-")]
+        csv: Option<String>,
     },
     /// Generate random personal ID codes
     Id {
@@ -38,7 +43,23 @@ enum Commands {
         /// List all supported countries
         #[arg(long)]
         list: bool,
+        /// Export as CSV (optionally to a file path)
+        #[arg(long, num_args = 0..=1, default_missing_value = "-")]
+        csv: Option<String>,
     },
+}
+
+fn csv_writer(path: &str) -> Box<dyn Write> {
+    if path == "-" {
+        Box::new(std::io::stdout())
+    } else {
+        Box::new(
+            std::fs::File::create(path).unwrap_or_else(|e| {
+                eprintln!("Cannot create {}: {}", path, e);
+                std::process::exit(1);
+            }),
+        )
+    }
 }
 
 fn main() {
@@ -46,7 +67,11 @@ fn main() {
     let mut rng = thread_rng();
 
     match cli.command {
-        Commands::Iban { country, count } => {
+        Commands::Iban {
+            country,
+            count,
+            csv,
+        } => {
             // Handle case where user passes just a number (e.g., `iban 3`)
             // clap parses it as country="3", count=1
             let (actual_country, actual_count) = match &country {
@@ -55,20 +80,41 @@ fn main() {
                 }
                 _ => (country.as_deref(), count),
             };
+
+            let mut out: Option<Box<dyn Write>> = csv.as_deref().map(csv_writer);
+            if let Some(ref mut w) = out {
+                writeln!(w, "{}", csv_fmt::IBAN_HEADER).unwrap();
+            }
+
             for _ in 0..actual_count {
                 match iban::generate_iban(actual_country, &mut rng) {
                     Ok(iban_code) => {
                         let valid = iban::validate_iban(&iban_code);
-                        println!(
-                            "{}  (valid: {})",
-                            iban::format_iban(&iban_code),
-                            if valid { "True" } else { "False" }
-                        );
+                        if let Some(ref mut w) = out {
+                            writeln!(
+                                w,
+                                "{}",
+                                csv_fmt::iban_row(&iban_code, &iban::format_iban(&iban_code), valid)
+                            )
+                            .unwrap();
+                        } else {
+                            println!(
+                                "{}  (valid: {})",
+                                iban::format_iban(&iban_code),
+                                if valid { "True" } else { "False" }
+                            );
+                        }
                     }
                     Err(e) => {
                         eprintln!("{}", e);
                         std::process::exit(1);
                     }
+                }
+            }
+
+            if let Some(path) = csv.as_deref() {
+                if path != "-" {
+                    eprintln!("Wrote {} rows to {}", actual_count, path);
                 }
             }
         }
@@ -78,6 +124,7 @@ fn main() {
             gender,
             year,
             list,
+            csv,
         } => {
             let registry = personal_id::Registry::new();
 
@@ -107,22 +154,38 @@ fn main() {
                 year,
             };
 
-            println!("{} - {}:", country, name);
+            let mut out: Option<Box<dyn Write>> = csv.as_deref().map(csv_writer);
+            if let Some(ref mut w) = out {
+                writeln!(w, "{}", csv_fmt::ID_HEADER).unwrap();
+            } else {
+                println!("{} - {}:", country, name);
+            }
+
             for _ in 0..count {
                 let code = registry.generate(&country, &opts, &mut rng).unwrap();
                 let parsed = registry.parse(&country, &code).unwrap();
-                let mut parts = Vec::new();
-                if let Some(ref g) = parsed.gender {
-                    parts.push(g.clone());
+                if let Some(ref mut w) = out {
+                    writeln!(w, "{}", csv_fmt::id_row(&country, &name, &parsed)).unwrap();
+                } else {
+                    let mut parts = Vec::new();
+                    if let Some(ref g) = parsed.gender {
+                        parts.push(g.clone());
+                    }
+                    if let Some(ref dob) = parsed.dob {
+                        parts.push(dob.clone());
+                    }
+                    parts.push(format!(
+                        "valid: {}",
+                        if parsed.valid { "True" } else { "False" }
+                    ));
+                    println!("  {}  ({})", parsed.code, parts.join(", "));
                 }
-                if let Some(ref dob) = parsed.dob {
-                    parts.push(dob.clone());
+            }
+
+            if let Some(path) = csv.as_deref() {
+                if path != "-" {
+                    eprintln!("Wrote {} rows to {}", count, path);
                 }
-                parts.push(format!(
-                    "valid: {}",
-                    if parsed.valid { "True" } else { "False" }
-                ));
-                println!("  {}  ({})", parsed.code, parts.join(", "));
             }
         }
     }

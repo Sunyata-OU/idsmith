@@ -1,6 +1,6 @@
 [package]
 name = "eu-test-data-generator"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2021"
 authors = ["Tony Benoy <me@tonybenoy.com>"]
 description = "Generate valid test IBANs and personal ID codes for 96 countries. Supports PESEL, personnummer, codice fiscale, JMBG, and 27 more formats."
@@ -28,4 +28,5 @@ optional = true
 
 [features]
 default = ["cli"]
-cli = ["clap"]
+cli = ["clap", "csv"]
+csv = []
