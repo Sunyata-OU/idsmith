@@ -1,6 +1,6 @@
 [package]
 name = "eu-test-data-generator"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 authors = ["Tony Benoy <me@tonybenoy.com>"]
 description = "Generate valid test IBANs and personal ID codes for 96 countries. Supports PESEL, personnummer, codice fiscale, JMBG, and 27 more formats."
@@ -9,6 +9,23 @@ keywords = ["iban", "test-data", "generator", "personal-id", "european"]
 categories = ["command-line-utilities", "development-tools::testing"]
 repository = "https://github.com/Sunyata-OU/EU-Test-Data-Generator"
 
+[lib]
+name = "eu_test_data_generator"
+path = "src/lib.rs"
+
+[[bin]]
+name = "eu-test-data-generator"
+path = "src/main.rs"
+required-features = ["cli"]
+
 [dependencies]
-clap = { version = "4", features = ["derive"] }
 rand = "0.8"
+
+[dependencies.clap]
+version = "4"
+features = ["derive"]
+optional = true
+
+[features]
+default = ["cli"]
+cli = ["clap"]

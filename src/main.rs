@@ -1,8 +1,7 @@
-mod iban;
-mod personal_id;
-
 use clap::{Parser, Subcommand};
 use rand::thread_rng;
+
+use eu_test_data_generator::{iban, personal_id};
 
 #[derive(Parser)]
 #[command(name = "eu-test-data-generator")]
