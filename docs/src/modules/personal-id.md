@@ -1,6 +1,6 @@
 # Personal ID
 
-Generate, validate, and parse national identity numbers for 252 countries. 56 countries have full checksum verification (SSN, CPF, Aadhaar, PESEL, etc.).
+Generate, validate, and parse national identity numbers for 97 countries with checksum verification (SSN, CPF, Aadhaar, PESEL, etc.).
 
 ## Generate
 

@@ -1,6 +1,6 @@
 # Company ID
 
-Generate and validate business identifiers (VAT numbers, EINs, CIFs) for 252 countries. Specific checksum implementations for GB, DE, FR, IT, and ES.
+Generate and validate business identifiers (VAT numbers, EINs, CIFs) for 250 countries. Specific checksum implementations for GB, DE, FR, IT, and ES.
 
 ## Generate
 
@@ -70,5 +70,3 @@ CompanyId.validate('GB', 'GB123456789');  // true
 | FR | TVA (11 digits) | SIREN + mod-97 |
 | IT | Partita IVA (11 digits) | Luhn |
 | ES | CIF (letter + 7 digits + check) | Custom weighted |
-
-All other countries use a generic format with country-appropriate patterns.

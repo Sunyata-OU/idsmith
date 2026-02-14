@@ -42,7 +42,7 @@ pub fn generate(_opts: &GenOptions, rng: &mut impl Rng) -> AccountResult {
 
     AccountResult {
         country_code: "NG".into(),
-        country_name: "Nigeria".into(),
+        country_name: crate::countries::get_country_name("NG").unwrap_or("Unknown").to_string(),
         format_name: "NUBAN".into(),
         bank_code: Some(bank_str),
         branch_code: None,

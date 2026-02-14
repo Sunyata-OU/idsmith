@@ -17,3 +17,7 @@ bindings/node/node_modules/
 bindings/node/*.node
 bindings/node/index.js
 bindings/node/index.d.ts
+
+# Benchmarking environments
+benchmarks/venv_python/
+benchmarks/venv_node/

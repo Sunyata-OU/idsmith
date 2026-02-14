@@ -125,6 +125,73 @@ interface SwiftResult {
 
 ---
 
+### `DriverLicense`
+
+| Method | Signature | Returns |
+|--------|-----------|---------|
+| `generate` | `(country?: string)` | `DriverLicenseResult` |
+| `validate` | `(country: string, code: string)` | `boolean` |
+| `listCountries` | `()` | `CountryInfo[]` |
+| `isSupported` | `(country: string)` | `boolean` |
+
+```typescript
+interface DriverLicenseResult {
+  countryCode: string;
+  countryName: string;
+  name: string;
+  code: string;
+  valid: boolean;
+}
+```
+
+---
+
+### `TaxId`
+
+| Method | Signature | Returns |
+|--------|-----------|---------|
+| `generate` | `(country?: string, options?: TaxIdOptions)` | `TaxIdResult` |
+| `validate` | `(country: string, code: string)` | `boolean` |
+| `listCountries` | `()` | `CountryInfo[]` |
+| `isSupported` | `(country: string)` | `boolean` |
+
+```typescript
+interface TaxIdOptions {
+  holderType?: string;  // IN only: P, C, H, F, A, T, B, L, J, G
+}
+
+interface TaxIdResult {
+  countryCode: string;
+  countryName: string;
+  name: string;
+  code: string;
+  valid: boolean;
+}
+```
+
+---
+
+### `Passport`
+
+| Method | Signature | Returns |
+|--------|-----------|---------|
+| `generate` | `(country?: string)` | `PassportResult` |
+| `validate` | `(country: string, code: string)` | `boolean` |
+| `listCountries` | `()` | `CountryInfo[]` |
+| `isSupported` | `(country: string)` | `boolean` |
+
+```typescript
+interface PassportResult {
+  countryCode: string;
+  countryName: string;
+  name: string;
+  code: string;
+  valid: boolean;
+}
+```
+
+---
+
 ## Functions
 
 | Function | Signature | Returns |

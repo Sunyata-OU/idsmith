@@ -6,10 +6,10 @@ use idsmith::bank_account::{GenOptions, Registry};
 fn test_account_country_count() {
     let registry = Registry::new();
     let countries = registry.list_countries();
-    // 16 specific + 94 IBAN-based + ~120 generic + 22 territory aliases = 249+
+    // 16 specific + 124 IBAN-based + 21 territory aliases = 159+
     assert!(
-        countries.len() >= 249,
-        "expected at least 249 bank account countries, got {}",
+        countries.len() >= 155,
+        "expected at least 155 bank account countries, got {}",
         countries.len()
     );
 }
@@ -146,7 +146,7 @@ fn test_non_iban_countries_no_iban() {
     let mut rng = thread_rng();
     let opts = GenOptions::default();
     let non_iban = [
-        "US", "CA", "MX", "AU", "IN", "JP", "CN", "ZA", "AR", "NG", "TH", "KE",
+        "US", "CA", "MX", "AU", "IN", "JP", "CN", "ZA", "AR", "NG",
     ];
     for &cc in &non_iban {
         let result = registry.generate(cc, &opts, &mut rng).unwrap();

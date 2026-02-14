@@ -179,7 +179,13 @@ pub(crate) fn fix_bban_checksums(country: &str, bban: &mut String, rng: &mut imp
         }
 
         "FR" | "GF" | "GP" | "MC" | "MF" | "MQ" | "NC" | "PF" | "PM" | "RE" | "TF" | "WF"
-        | "YT" => {
+        | "YT"
+        // UEMOA zone
+        | "BF" | "BJ" | "CI" | "ML" | "NE" | "SN" | "TG"
+        // CEMAC zone
+        | "CF" | "CG" | "CM" | "GA" | "GQ" | "TD"
+        // Other French-influenced
+        | "BI" | "DJ" | "KM" | "MG" | "GN" => {
             let len = b.len();
             b[len - 2] = b'0';
             b[len - 1] = b'0';

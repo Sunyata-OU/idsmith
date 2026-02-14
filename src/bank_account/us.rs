@@ -29,7 +29,7 @@ pub fn generate(_opts: &GenOptions, rng: &mut impl Rng) -> AccountResult {
 
     AccountResult {
         country_code: "US".into(),
-        country_name: "United States".into(),
+        country_name: crate::countries::get_country_name("US").unwrap_or("Unknown").to_string(),
         format_name: "ABA Routing + Account".into(),
         bank_code: Some(routing),
         branch_code: None,

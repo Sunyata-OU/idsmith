@@ -4,393 +4,380 @@ use super::AccountResult;
 
 struct IbanCountryInfo {
     code: &'static str,
-    country_name: &'static str,
 }
 
 static IBAN_COUNTRIES: &[IbanCountryInfo] = &[
     IbanCountryInfo {
         code: "AD",
-        country_name: "Andorra",
     },
     IbanCountryInfo {
         code: "AE",
-        country_name: "United Arab Emirates",
     },
     IbanCountryInfo {
         code: "AL",
-        country_name: "Albania",
+    },
+    IbanCountryInfo {
+        code: "AO",
     },
     IbanCountryInfo {
         code: "AT",
-        country_name: "Austria",
     },
     IbanCountryInfo {
         code: "AX",
-        country_name: "Aland Islands",
     },
     IbanCountryInfo {
         code: "AZ",
-        country_name: "Azerbaijan",
     },
     IbanCountryInfo {
         code: "BA",
-        country_name: "Bosnia and Herzegovina",
     },
     IbanCountryInfo {
         code: "BE",
-        country_name: "Belgium",
+    },
+    IbanCountryInfo {
+        code: "BF",
     },
     IbanCountryInfo {
         code: "BG",
-        country_name: "Bulgaria",
     },
     IbanCountryInfo {
         code: "BH",
-        country_name: "Bahrain",
+    },
+    IbanCountryInfo {
+        code: "BI",
+    },
+    IbanCountryInfo {
+        code: "BJ",
     },
     IbanCountryInfo {
         code: "BR",
-        country_name: "Brazil",
     },
     IbanCountryInfo {
         code: "BY",
-        country_name: "Belarus",
+    },
+    IbanCountryInfo {
+        code: "CF",
+    },
+    IbanCountryInfo {
+        code: "CG",
     },
     IbanCountryInfo {
         code: "CH",
-        country_name: "Switzerland",
+    },
+    IbanCountryInfo {
+        code: "CI",
+    },
+    IbanCountryInfo {
+        code: "CM",
+    },
+    IbanCountryInfo {
+        code: "CV",
     },
     IbanCountryInfo {
         code: "CR",
-        country_name: "Costa Rica",
     },
     IbanCountryInfo {
         code: "CY",
-        country_name: "Cyprus",
     },
     IbanCountryInfo {
         code: "CZ",
-        country_name: "Czech Republic",
     },
     IbanCountryInfo {
         code: "DE",
-        country_name: "Germany",
+    },
+    IbanCountryInfo {
+        code: "DJ",
     },
     IbanCountryInfo {
         code: "DK",
-        country_name: "Denmark",
+    },
+    IbanCountryInfo {
+        code: "DZ",
     },
     IbanCountryInfo {
         code: "DO",
-        country_name: "Dominican Republic",
     },
     IbanCountryInfo {
         code: "EE",
-        country_name: "Estonia",
     },
     IbanCountryInfo {
         code: "EG",
-        country_name: "Egypt",
     },
     IbanCountryInfo {
         code: "ES",
-        country_name: "Spain",
     },
     IbanCountryInfo {
         code: "FI",
-        country_name: "Finland",
     },
     IbanCountryInfo {
         code: "FO",
-        country_name: "Faroe Islands",
     },
     IbanCountryInfo {
         code: "FR",
-        country_name: "France",
+    },
+    IbanCountryInfo {
+        code: "GA",
     },
     IbanCountryInfo {
         code: "GB",
-        country_name: "United Kingdom",
     },
     IbanCountryInfo {
         code: "GE",
-        country_name: "Georgia",
+    },
+    IbanCountryInfo {
+        code: "GG",
     },
     IbanCountryInfo {
         code: "GF",
-        country_name: "French Guiana",
     },
     IbanCountryInfo {
         code: "GI",
-        country_name: "Gibraltar",
     },
     IbanCountryInfo {
         code: "GL",
-        country_name: "Greenland",
+    },
+    IbanCountryInfo {
+        code: "GN",
     },
     IbanCountryInfo {
         code: "GP",
-        country_name: "Guadeloupe",
+    },
+    IbanCountryInfo {
+        code: "GQ",
     },
     IbanCountryInfo {
         code: "GR",
-        country_name: "Greece",
     },
     IbanCountryInfo {
         code: "GT",
-        country_name: "Guatemala",
+    },
+    IbanCountryInfo {
+        code: "GW",
     },
     IbanCountryInfo {
         code: "HR",
-        country_name: "Croatia",
     },
     IbanCountryInfo {
         code: "HU",
-        country_name: "Hungary",
     },
     IbanCountryInfo {
         code: "IE",
-        country_name: "Ireland",
     },
     IbanCountryInfo {
         code: "IL",
-        country_name: "Israel",
+    },
+    IbanCountryInfo {
+        code: "IM",
+    },
+    IbanCountryInfo {
+        code: "IR",
     },
     IbanCountryInfo {
         code: "IQ",
-        country_name: "Iraq",
     },
     IbanCountryInfo {
         code: "IS",
-        country_name: "Iceland",
     },
     IbanCountryInfo {
         code: "IT",
-        country_name: "Italy",
+    },
+    IbanCountryInfo {
+        code: "JE",
     },
     IbanCountryInfo {
         code: "JO",
-        country_name: "Jordan",
+    },
+    IbanCountryInfo {
+        code: "KM",
     },
     IbanCountryInfo {
         code: "KW",
-        country_name: "Kuwait",
     },
     IbanCountryInfo {
         code: "KZ",
-        country_name: "Kazakhstan",
     },
     IbanCountryInfo {
         code: "LB",
-        country_name: "Lebanon",
+    },
+    IbanCountryInfo {
+        code: "MA",
+    },
+    IbanCountryInfo {
+        code: "MG",
+    },
+    IbanCountryInfo {
+        code: "ML",
     },
     IbanCountryInfo {
         code: "LC",
-        country_name: "Saint Lucia",
     },
     IbanCountryInfo {
         code: "LI",
-        country_name: "Liechtenstein",
     },
     IbanCountryInfo {
         code: "LT",
-        country_name: "Lithuania",
     },
     IbanCountryInfo {
         code: "LU",
-        country_name: "Luxembourg",
     },
     IbanCountryInfo {
         code: "LV",
-        country_name: "Latvia",
     },
     IbanCountryInfo {
         code: "LY",
-        country_name: "Libya",
     },
     IbanCountryInfo {
         code: "MC",
-        country_name: "Monaco",
     },
     IbanCountryInfo {
         code: "MD",
-        country_name: "Moldova",
     },
     IbanCountryInfo {
         code: "ME",
-        country_name: "Montenegro",
     },
     IbanCountryInfo {
         code: "MF",
-        country_name: "Saint Martin",
     },
     IbanCountryInfo {
         code: "MK",
-        country_name: "North Macedonia",
     },
     IbanCountryInfo {
         code: "MN",
-        country_name: "Mongolia",
     },
     IbanCountryInfo {
         code: "MQ",
-        country_name: "Martinique",
     },
     IbanCountryInfo {
         code: "MR",
-        country_name: "Mauritania",
+    },
+    IbanCountryInfo {
+        code: "MZ",
     },
     IbanCountryInfo {
         code: "MT",
-        country_name: "Malta",
     },
     IbanCountryInfo {
         code: "MU",
-        country_name: "Mauritius",
     },
     IbanCountryInfo {
         code: "NC",
-        country_name: "New Caledonia",
+    },
+    IbanCountryInfo {
+        code: "NE",
     },
     IbanCountryInfo {
         code: "NI",
-        country_name: "Nicaragua",
     },
     IbanCountryInfo {
         code: "NL",
-        country_name: "Netherlands",
     },
     IbanCountryInfo {
         code: "NO",
-        country_name: "Norway",
     },
     IbanCountryInfo {
         code: "OM",
-        country_name: "Oman",
     },
     IbanCountryInfo {
         code: "PF",
-        country_name: "French Polynesia",
     },
     IbanCountryInfo {
         code: "PK",
-        country_name: "Pakistan",
     },
     IbanCountryInfo {
         code: "PL",
-        country_name: "Poland",
     },
     IbanCountryInfo {
         code: "PM",
-        country_name: "Saint Pierre and Miquelon",
     },
     IbanCountryInfo {
         code: "PS",
-        country_name: "Palestine",
     },
     IbanCountryInfo {
         code: "PT",
-        country_name: "Portugal",
     },
     IbanCountryInfo {
         code: "QA",
-        country_name: "Qatar",
     },
     IbanCountryInfo {
         code: "RE",
-        country_name: "Reunion",
     },
     IbanCountryInfo {
         code: "RO",
-        country_name: "Romania",
     },
     IbanCountryInfo {
         code: "RS",
-        country_name: "Serbia",
     },
     IbanCountryInfo {
         code: "RU",
-        country_name: "Russia",
     },
     IbanCountryInfo {
         code: "SA",
-        country_name: "Saudi Arabia",
     },
     IbanCountryInfo {
         code: "SC",
-        country_name: "Seychelles",
     },
     IbanCountryInfo {
         code: "SD",
-        country_name: "Sudan",
     },
     IbanCountryInfo {
         code: "SE",
-        country_name: "Sweden",
     },
     IbanCountryInfo {
         code: "SI",
-        country_name: "Slovenia",
     },
     IbanCountryInfo {
         code: "SK",
-        country_name: "Slovakia",
     },
     IbanCountryInfo {
         code: "SM",
-        country_name: "San Marino",
+    },
+    IbanCountryInfo {
+        code: "SN",
     },
     IbanCountryInfo {
         code: "SO",
-        country_name: "Somalia",
     },
     IbanCountryInfo {
         code: "ST",
-        country_name: "Sao Tome and Principe",
     },
     IbanCountryInfo {
         code: "SV",
-        country_name: "El Salvador",
+    },
+    IbanCountryInfo {
+        code: "TD",
     },
     IbanCountryInfo {
         code: "TF",
-        country_name: "French Southern Territories",
+    },
+    IbanCountryInfo {
+        code: "TG",
     },
     IbanCountryInfo {
         code: "TL",
-        country_name: "Timor-Leste",
     },
     IbanCountryInfo {
         code: "TN",
-        country_name: "Tunisia",
     },
     IbanCountryInfo {
         code: "TR",
-        country_name: "Turkey",
     },
     IbanCountryInfo {
         code: "UA",
-        country_name: "Ukraine",
     },
     IbanCountryInfo {
         code: "VA",
-        country_name: "Vatican City",
     },
     IbanCountryInfo {
         code: "VG",
-        country_name: "British Virgin Islands",
     },
     IbanCountryInfo {
         code: "WF",
-        country_name: "Wallis and Futuna",
     },
     IbanCountryInfo {
         code: "XK",
-        country_name: "Kosovo",
     },
     IbanCountryInfo {
         code: "YT",
-        country_name: "Mayotte",
     },
 ];
 
@@ -426,7 +413,7 @@ pub fn generate(code: &str, rng: &mut impl Rng) -> Option<AccountResult> {
 
     Some(AccountResult {
         country_code: code.to_string(),
-        country_name: info.country_name.to_string(),
+        country_name: crate::countries::get_country_name(code).unwrap_or("Unknown").to_string(),
         format_name: "IBAN Account".to_string(),
         bank_code: Some(bank_code),
         branch_code,
@@ -474,6 +461,6 @@ pub fn format(code: &str, raw: &str) -> Option<String> {
 pub fn list_countries() -> Vec<(&'static str, &'static str, &'static str, bool)> {
     IBAN_COUNTRIES
         .iter()
-        .map(|c| (c.code, c.country_name, "IBAN Account", true))
+        .map(|c| (c.code, crate::countries::get_country_name(c.code).unwrap_or("Unknown"), "IBAN Account", true))
         .collect()
 }

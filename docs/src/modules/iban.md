@@ -1,6 +1,6 @@
 # IBAN
 
-Generate and validate IBANs for 96 countries with full mod-97-10 checksum validation.
+Generate and validate IBANs for 124 countries with full mod-97-10 checksum validation.
 
 ## Generate
 

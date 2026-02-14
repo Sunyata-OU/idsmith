@@ -25,6 +25,15 @@ idsmith validate account 167078019952865929 --country MX
 
 # Validate a SWIFT/BIC code
 idsmith validate swift PBIHNLY9XXX
+
+# Validate a Driver's License
+idsmith validate license A123456789012 --country US
+
+# Validate a Tax ID
+idsmith validate tax ABCDE1234F --country IN
+
+# Validate a Passport
+idsmith validate passport 123456789 --country US
 ```
 
 ## Generating Data
@@ -49,6 +58,15 @@ idsmith company 5 --country GB
 
 # Generate SWIFT codes
 idsmith swift 3 --country US
+
+# Generate 5 US Driver's Licenses
+idsmith license 5 --country US
+
+# Generate 3 Indian Tax IDs (PAN)
+idsmith tax 3 --country IN
+
+# Generate 10 German Passports
+idsmith passport 10 --country DE
 ```
 
 ## Output Formats

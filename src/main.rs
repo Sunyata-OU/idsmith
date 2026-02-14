@@ -3,12 +3,15 @@ use std::io::Write;
 use clap::{Parser, Subcommand};
 use rand::{thread_rng, Rng};
 
-use idsmith::{bank_account, company_id, credit_card, csv as csv_fmt, iban, personal_id, swift};
+use idsmith::{
+    bank_account, company_id, credit_card, csv as csv_fmt, driver_license, iban, passport,
+    personal_id, swift, tax_id,
+};
 
 #[derive(Parser)]
 #[command(name = "idsmith")]
 #[command(
-    about = "Validate and generate checksum-correct IBANs, personal IDs, bank accounts, and more for 252 countries"
+    about = "Validate and generate checksum-correct IBANs, personal IDs, bank accounts, and more"
 )]
 struct Cli {
     #[command(subcommand)]
@@ -117,6 +120,69 @@ enum Commands {
         #[arg(default_value = "1")]
         count: u32,
         /// Country code (e.g., DE, GB, FR, IT, ES)
+        #[arg(long)]
+        country: Option<String>,
+        /// List all supported countries
+        #[arg(long)]
+        list: bool,
+        /// Export as CSV (optionally to a file path)
+        #[arg(long, num_args = 0..=1, default_missing_value = "-")]
+        csv: Option<String>,
+        /// Export as JSON (optionally to a file path)
+        #[cfg(feature = "json")]
+        #[arg(long, num_args = 0..=1, default_missing_value = "-")]
+        json: Option<String>,
+    },
+    /// Generate random driver's license numbers
+    License {
+        /// Number of licenses to generate
+        #[arg(default_value = "1")]
+        count: u32,
+        /// Country code (e.g., IN, US, GB)
+        #[arg(long)]
+        country: Option<String>,
+        /// State code (for India: MH, DL, KA, etc.)
+        #[arg(long)]
+        state: Option<String>,
+        /// List all supported countries
+        #[arg(long)]
+        list: bool,
+        /// Export as CSV (optionally to a file path)
+        #[arg(long, num_args = 0..=1, default_missing_value = "-")]
+        csv: Option<String>,
+        /// Export as JSON (optionally to a file path)
+        #[cfg(feature = "json")]
+        #[arg(long, num_args = 0..=1, default_missing_value = "-")]
+        json: Option<String>,
+    },
+    /// Generate random tax IDs (PAN, TIN, etc.)
+    Tax {
+        /// Number of tax IDs to generate
+        #[arg(default_value = "1")]
+        count: u32,
+        /// Country code (e.g., IN, US, GB)
+        #[arg(long)]
+        country: Option<String>,
+        /// Holder type (for India PAN: P, C, H, F, A, T, B, L, J, G)
+        #[arg(long)]
+        holder_type: Option<String>,
+        /// List all supported countries
+        #[arg(long)]
+        list: bool,
+        /// Export as CSV (optionally to a file path)
+        #[arg(long, num_args = 0..=1, default_missing_value = "-")]
+        csv: Option<String>,
+        /// Export as JSON (optionally to a file path)
+        #[cfg(feature = "json")]
+        #[arg(long, num_args = 0..=1, default_missing_value = "-")]
+        json: Option<String>,
+    },
+    /// Generate random passport numbers
+    Passport {
+        /// Number of passports to generate
+        #[arg(default_value = "1")]
+        count: u32,
+        /// Country code (e.g., IN, US, GB)
         #[arg(long)]
         country: Option<String>,
         /// List all supported countries
@@ -680,6 +746,253 @@ fn main() {
                 }
             }
         }
+        Commands::License {
+            count,
+            country,
+            state,
+            list,
+            csv,
+            json,
+        } => {
+            let registry = driver_license::Registry::new();
+
+            if list {
+                println!("{:<6} {:<25} ID Name", "Code", "Country");
+                println!("{}", "-".repeat(50));
+                for (code, country_name, name) in registry.list_countries() {
+                    println!("{:<6} {:<25} {}", code, country_name, name);
+                }
+                return;
+            }
+
+            let opts = driver_license::GenOptions {
+                country: country.clone(),
+                state,
+            };
+
+            let mut out_csv: Option<Box<dyn Write>> = csv.as_deref().map(csv_writer);
+            if let Some(ref mut w) = out_csv {
+                writeln!(w, "{}", csv_fmt::LICENSE_HEADER).unwrap();
+            }
+
+            #[cfg(feature = "json")]
+            let mut json_results = Vec::new();
+
+            for _ in 0..count {
+                let result = match registry.generate(&opts, &mut rng) {
+                    Some(r) => r,
+                    None => {
+                        eprintln!("Unsupported country: {}", country.as_deref().unwrap_or(""));
+                        std::process::exit(1);
+                    }
+                };
+
+                #[cfg(feature = "json")]
+                if json.is_some() {
+                    json_results.push(result.clone());
+                }
+
+                if let Some(ref mut w) = out_csv {
+                    writeln!(w, "{}", csv_fmt::license_row(&result)).unwrap();
+                } else {
+                    let mut print_it = true;
+                    #[cfg(feature = "json")]
+                    if json.is_some() {
+                        print_it = false;
+                    }
+
+                    if print_it {
+                        println!(
+                            "{} - {} - {}: {}  (valid: {})",
+                            result.country_code,
+                            result.country_name,
+                            result.name,
+                            result.code,
+                            result.valid
+                        );
+                    }
+                }
+            }
+
+            #[cfg(feature = "json")]
+            if let Some(path) = json.as_deref() {
+                let mut w = csv_writer(path);
+                serde_json::to_writer_pretty(&mut w, &json_results).unwrap();
+                if path != "-" {
+                    eprintln!("Wrote {} rows to {}", count, path);
+                }
+            }
+
+            if let Some(path) = csv.as_deref() {
+                if path != "-" {
+                    eprintln!("Wrote {} rows to {}", count, path);
+                }
+            }
+        }
+        Commands::Tax {
+            count,
+            country,
+            holder_type,
+            list,
+            csv,
+            json,
+        } => {
+            let registry = tax_id::Registry::new();
+
+            if list {
+                println!("{:<6} {:<25} ID Name", "Code", "Country");
+                println!("{}", "-".repeat(50));
+                for (code, country_name, name) in registry.list_countries() {
+                    println!("{:<6} {:<25} {}", code, country_name, name);
+                }
+                return;
+            }
+
+            let opts = tax_id::GenOptions {
+                country: country.clone(),
+                holder_type,
+            };
+
+            let mut out_csv: Option<Box<dyn Write>> = csv.as_deref().map(csv_writer);
+            if let Some(ref mut w) = out_csv {
+                writeln!(w, "{}", csv_fmt::TAX_HEADER).unwrap();
+            }
+
+            #[cfg(feature = "json")]
+            let mut json_results = Vec::new();
+
+            for _ in 0..count {
+                let result = match registry.generate(&opts, &mut rng) {
+                    Some(r) => r,
+                    None => {
+                        eprintln!("Unsupported country: {}", country.as_deref().unwrap_or(""));
+                        std::process::exit(1);
+                    }
+                };
+
+                #[cfg(feature = "json")]
+                if json.is_some() {
+                    json_results.push(result.clone());
+                }
+
+                if let Some(ref mut w) = out_csv {
+                    writeln!(w, "{}", csv_fmt::tax_row(&result)).unwrap();
+                } else {
+                    let mut print_it = true;
+                    #[cfg(feature = "json")]
+                    if json.is_some() {
+                        print_it = false;
+                    }
+
+                    if print_it {
+                        println!(
+                            "{} - {} - {}: {}  (valid: {})",
+                            result.country_code,
+                            result.country_name,
+                            result.name,
+                            result.code,
+                            result.valid
+                        );
+                    }
+                }
+            }
+
+            #[cfg(feature = "json")]
+            if let Some(path) = json.as_deref() {
+                let mut w = csv_writer(path);
+                serde_json::to_writer_pretty(&mut w, &json_results).unwrap();
+                if path != "-" {
+                    eprintln!("Wrote {} rows to {}", count, path);
+                }
+            }
+
+            if let Some(path) = csv.as_deref() {
+                if path != "-" {
+                    eprintln!("Wrote {} rows to {}", count, path);
+                }
+            }
+        }
+        Commands::Passport {
+            count,
+            country,
+            list,
+            csv,
+            json,
+        } => {
+            let registry = passport::Registry::new();
+
+            if list {
+                println!("{:<6} {:<25} ID Name", "Code", "Country");
+                println!("{}", "-".repeat(50));
+                for (code, country_name, name) in registry.list_countries() {
+                    println!("{:<6} {:<25} {}", code, country_name, name);
+                }
+                return;
+            }
+
+            let opts = passport::GenOptions {
+                country: country.clone(),
+            };
+
+            let mut out_csv: Option<Box<dyn Write>> = csv.as_deref().map(csv_writer);
+            if let Some(ref mut w) = out_csv {
+                writeln!(w, "{}", csv_fmt::PASSPORT_HEADER).unwrap();
+            }
+
+            #[cfg(feature = "json")]
+            let mut json_results = Vec::new();
+
+            for _ in 0..count {
+                let result = match registry.generate(&opts, &mut rng) {
+                    Some(r) => r,
+                    None => {
+                        eprintln!("Unsupported country: {}", country.as_deref().unwrap_or(""));
+                        std::process::exit(1);
+                    }
+                };
+
+                #[cfg(feature = "json")]
+                if json.is_some() {
+                    json_results.push(result.clone());
+                }
+
+                if let Some(ref mut w) = out_csv {
+                    writeln!(w, "{}", csv_fmt::passport_row(&result)).unwrap();
+                } else {
+                    let mut print_it = true;
+                    #[cfg(feature = "json")]
+                    if json.is_some() {
+                        print_it = false;
+                    }
+
+                    if print_it {
+                        println!(
+                            "{} - {} - {}: {}  (valid: {})",
+                            result.country_code,
+                            result.country_name,
+                            result.name,
+                            result.code,
+                            result.valid
+                        );
+                    }
+                }
+            }
+
+            #[cfg(feature = "json")]
+            if let Some(path) = json.as_deref() {
+                let mut w = csv_writer(path);
+                serde_json::to_writer_pretty(&mut w, &json_results).unwrap();
+                if path != "-" {
+                    eprintln!("Wrote {} rows to {}", count, path);
+                }
+            }
+
+            if let Some(path) = csv.as_deref() {
+                if path != "-" {
+                    eprintln!("Wrote {} rows to {}", count, path);
+                }
+            }
+        }
         Commands::Validate {
             category,
             code,
@@ -717,9 +1030,30 @@ fn main() {
                     });
                     company_id::Registry::new().validate(&cc, &code)
                 }
+                "license" => {
+                    let cc = country.unwrap_or_else(|| {
+                        eprintln!("Error: --country is required for driver's license validation");
+                        std::process::exit(1);
+                    });
+                    driver_license::Registry::new().validate(&cc, &code)
+                }
+                "tax" => {
+                    let cc = country.unwrap_or_else(|| {
+                        eprintln!("Error: --country is required for tax ID validation");
+                        std::process::exit(1);
+                    });
+                    tax_id::Registry::new().validate(&cc, &code)
+                }
+                "passport" => {
+                    let cc = country.unwrap_or_else(|| {
+                        eprintln!("Error: --country is required for passport validation");
+                        std::process::exit(1);
+                    });
+                    passport::Registry::new().validate(&cc, &code)
+                }
                 _ => {
                     eprintln!(
-                        "Unknown category: {}. Use iban, account, id, card, swift, or company.",
+                        "Unknown category: {}. Use iban, account, id, card, swift, company, license, tax, or passport.",
                         cat
                     );
                     std::process::exit(1);

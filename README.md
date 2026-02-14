@@ -9,7 +9,7 @@
 [![CI](https://github.com/Sunyata-OU/idsmith/actions/workflows/ci.yml/badge.svg)](https://github.com/Sunyata-OU/idsmith/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Validate and generate checksum-correct **IBANs**, **personal IDs**, **bank accounts**, **credit cards**, **SWIFT/BIC**, and **company IDs** for 252 countries.
+Validate and generate checksum-correct **IBANs**, **personal IDs**, **bank accounts**, **credit cards**, **SWIFT/BIC**, **company IDs**, **driver's licenses**, **tax IDs**, and **passports**.
 
 Available as a **Rust crate**, **Python package**, and **Node.js module** — all powered by the same Rust core.
 
@@ -48,10 +48,13 @@ Use `default-features = false` when using as a library to keep dependencies mini
 
 ```rust
 // Rust
-use idsmith::{credit_cards, personal_ids};
+use idsmith::{credit_cards, personal_ids, tax_ids, passports, driver_licenses};
 
 let valid = credit_cards().validate("4152839405126374");
 let ssn_ok = personal_ids().validate("US", "446-72-2445").unwrap_or(false);
+let pan_ok = tax_ids().validate("IN", "ABCDE1234F");
+let passport_ok = passports().validate("US", "123456789");
+let dl_ok = driver_licenses().validate("US", "A123456789012");
 ```
 
 ```python
@@ -60,26 +63,35 @@ import idsmith
 
 idsmith.CreditCard.validate("4152839405126374")      # True
 idsmith.PersonalId.validate("US", "446-72-2445")      # True
+idsmith.TaxId.validate("IN", "ABCDE1234F")            # True
+idsmith.Passport.generate(country="DE")
+idsmith.DriverLicense.validate("US", "A123456789012")  # True
 iban = idsmith.generate_iban("DE")
 ```
 
 ```javascript
 // Node.js
-const { CreditCard, PersonalId, generateIban } = require('idsmith');
+const { CreditCard, PersonalId, TaxId, Passport, DriverLicense, generateIban } = require('idsmith');
 
 CreditCard.validate('4152839405126374');      // true
 PersonalId.validate('US', '446-72-2445');     // true
+TaxId.validate('IN', 'ABCDE1234F');           // true
+const passport = Passport.generate('DE');
+DriverLicense.validate('US', 'A123456789012'); // true
 const iban = generateIban('DE');
 ```
 
 ## Features
 
-- **96 IBAN countries** with mod-97-10 checksum validation
-- **252 bank account formats** — US ABA, MX CLABE, AU BSB, IN IFSC, and more
-- **56 checksum-verified personal IDs** — SSN, CPF, Aadhaar, PESEL, Codice Fiscale, etc.
+- **124 IBAN countries** with mod-97-10 checksum validation
+- **159 bank account formats** — US ABA, MX CLABE, AU BSB, IN IFSC, and more
+- **97 personal ID formats** — SSN, CPF, Aadhaar, PESEL, Codice Fiscale, etc.
 - **6 credit card brands** — Visa, Mastercard, Amex, Discover, JCB, Diners (Luhn)
 - **SWIFT/BIC codes** — valid 8 and 11 character codes
-- **252 company ID formats** — VAT numbers, EINs, CIFs with checksums
+- **250 company ID formats** — VAT numbers, EINs, CIFs with checksums
+- **79 driver's license formats** — with country-specific checksum and format validation
+- **80 tax ID formats** — with checksum validation (PAN, TIN, CPF, SIN, Steuer-IdNr, USCI, Partita IVA, NIF, BSN, RFC, and more)
+- **79 passport formats** — with country-specific format validation
 - **CLI tool** with JSON and CSV export
 
 ## Performance
@@ -88,9 +100,17 @@ IBAN validation throughput (100k iterations, single-threaded):
 
 | Library | Language | Throughput | vs idsmith |
 |---------|----------|-----------|------------|
-| **idsmith** | **Rust** | **~1,350,000 ops/s** | **—** |
-| `ibantools` | Node.js | ~490,000 ops/s | ~2.7x slower |
-| `python-stdnum` | Python | ~53,000 ops/s | ~25x slower |
+| **idsmith** | **Rust** | **~1,280,000 ops/s** | **—** |
+| `ibantools` | Node.js | ~460,000 ops/s | ~2.7x slower |
+| `python-stdnum` | Python | ~54,000 ops/s | ~23x slower |
+
+Extended document validation (idsmith Rust):
+
+| Document Type | Throughput | vs Node.js alternatives |
+|---------------|------------|-------------------------|
+| Personal ID (US SSN) | ~4,900,000 ops/s | ~30x faster |
+| Credit Card (Visa) | ~7,500,000 ops/s | ~53x faster |
+| Tax ID (India PAN) | ~11,400,000 ops/s | — |
 
 Python and Node.js bindings call the same Rust core — same speed, same correctness.
 

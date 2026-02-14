@@ -1,6 +1,6 @@
 # Bank Account
 
-Generate, validate, and format bank account numbers for 252 countries. Includes specific implementations for 16 major economies with IBAN support for 96 countries.
+Generate, validate, and format bank account numbers for 159 countries. Includes specific implementations for 16 major economies with IBAN support for 124 countries.
 
 ## Generate
 

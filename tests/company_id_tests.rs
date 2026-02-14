@@ -44,11 +44,9 @@ fn test_generic_and_fallback_countries() {
     assert_eq!(res_us.country_code, "US");
     assert_eq!(res_us.name, "EIN");
 
-    // Unknown country (not in any list)
+    // Unknown country (not in any list) — should return None
     let opts_zz = GenOptions {
         country: Some("ZZ".to_string()),
     };
-    let res_zz = registry.generate(&opts_zz, &mut rng).unwrap();
-    assert_eq!(res_zz.country_code, "ZZ");
-    assert_eq!(res_zz.name, "Business ID");
+    assert!(registry.generate(&opts_zz, &mut rng).is_none());
 }

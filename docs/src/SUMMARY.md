@@ -27,6 +27,9 @@
 - [Credit Card](./modules/credit-card.md)
 - [Company ID](./modules/company-id.md)
 - [SWIFT/BIC](./modules/swift.md)
+- [Driver's License](./modules/driver-license.md)
+- [Tax ID](./modules/tax-id.md)
+- [Passport](./modules/passport.md)
 
 ---
 

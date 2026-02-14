@@ -1,8 +1,8 @@
 //! # idsmith
 //!
-//! Validate and generate checksum-correct IBANs, personal IDs, and bank accounts
-//! for 252 countries. Every identifier passes mod-97 (IBAN) and
-//! national checksum validation.
+//! Validate and generate checksum-correct IBANs, personal IDs, bank accounts,
+//! credit cards, SWIFT/BIC, company IDs, driver's licenses, tax IDs, and passports.
+//! Every identifier passes mod-97 (IBAN) and national checksum validation.
 //!
 //! ## Quick Start
 //!
@@ -26,8 +26,8 @@
 //! # idsmith
 //!
 //! A comprehensive **Generator** and **Validator** for valid, checksum-correct
-//! identifiers across 252 countries. Supports IBANs, Personal IDs, Bank Accounts,
-//! Credit Cards, SWIFT/BIC, and Company IDs.
+//! identifiers. Supports IBANs, Personal IDs, Bank Accounts,
+//! Credit Cards, SWIFT/BIC, Company IDs, Driver's Licenses, Tax IDs, and Passports.
 //!
 //! ## Quick Start (Generation)
 //!
@@ -58,10 +58,14 @@
 
 pub mod bank_account;
 pub mod company_id;
+pub mod countries;
 pub mod credit_card;
+pub mod driver_license;
 pub mod iban;
+pub mod passport;
 pub mod personal_id;
 pub mod swift;
+pub mod tax_id;
 
 #[cfg(feature = "csv")]
 pub mod csv;
@@ -69,14 +73,14 @@ pub mod csv;
 use std::sync::OnceLock;
 
 /// Global registry for bank accounts.
-/// Provides methods to generate, validate, and format bank account numbers for 252 countries.
+/// Provides methods to generate, validate, and format bank account numbers.
 pub fn bank_accounts() -> &'static bank_account::Registry {
     static REGISTRY: OnceLock<bank_account::Registry> = OnceLock::new();
     REGISTRY.get_or_init(bank_account::Registry::new)
 }
 
 /// Global registry for personal IDs.
-/// Provides methods to generate, validate, and parse national ID numbers (SSN, CPF, Aadhaar, etc.) for 252 countries.
+/// Provides methods to generate, validate, and parse national ID numbers (SSN, CPF, Aadhaar, etc.).
 pub fn personal_ids() -> &'static personal_id::Registry {
     static REGISTRY: OnceLock<personal_id::Registry> = OnceLock::new();
     REGISTRY.get_or_init(personal_id::Registry::new)
@@ -101,4 +105,25 @@ pub fn company_ids() -> &'static company_id::Registry {
 pub fn swift_codes() -> &'static swift::Registry {
     static REGISTRY: OnceLock<swift::Registry> = OnceLock::new();
     REGISTRY.get_or_init(swift::Registry::new)
+}
+
+/// Global registry for driver's licenses.
+/// Provides methods to generate and validate driver's license numbers for all countries.
+pub fn driver_licenses() -> &'static driver_license::Registry {
+    static REGISTRY: OnceLock<driver_license::Registry> = OnceLock::new();
+    REGISTRY.get_or_init(driver_license::Registry::new)
+}
+
+/// Global registry for tax IDs.
+/// Provides methods to generate and validate tax identification numbers (PAN, TIN, etc.) for all countries.
+pub fn tax_ids() -> &'static tax_id::Registry {
+    static REGISTRY: OnceLock<tax_id::Registry> = OnceLock::new();
+    REGISTRY.get_or_init(tax_id::Registry::new)
+}
+
+/// Global registry for passport numbers.
+/// Provides methods to generate and validate passport numbers for all countries.
+pub fn passports() -> &'static passport::Registry {
+    static REGISTRY: OnceLock<passport::Registry> = OnceLock::new();
+    REGISTRY.get_or_init(passport::Registry::new)
 }

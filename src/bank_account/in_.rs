@@ -26,7 +26,7 @@ pub fn generate(_opts: &GenOptions, rng: &mut impl Rng) -> AccountResult {
 
     AccountResult {
         country_code: "IN".into(),
-        country_name: "India".into(),
+        country_name: crate::countries::get_country_name("IN").unwrap_or("Unknown").to_string(),
         format_name: "IFSC + Account".into(),
         bank_code: Some(ifsc),
         branch_code: None,

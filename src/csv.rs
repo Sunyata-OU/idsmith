@@ -10,8 +10,11 @@ use std::io::Write;
 use crate::bank_account::AccountResult;
 use crate::company_id::CompanyResult;
 use crate::credit_card::CardResult;
+use crate::driver_license::DriverLicenseResult;
+use crate::passport::PassportResult;
 use crate::personal_id::IdResult;
 use crate::swift::SwiftResult;
+use crate::tax_id::TaxIdResult;
 
 /// Wrap a CSV field in double quotes if it contains commas, double-quotes, or
 /// newlines, per RFC 4180. Internal double-quotes are escaped by doubling.
@@ -157,4 +160,51 @@ pub fn write_account_csv<W: Write>(
         writeln!(writer, "{}", account_row(result))?;
     }
     Ok(())
+}
+
+/// CSV header for driver's license rows.
+pub const LICENSE_HEADER: &str = "country,country_name,name,code,state,valid";
+
+/// Format a single driver's license result as a CSV row.
+pub fn license_row(result: &DriverLicenseResult) -> String {
+    format!(
+        "{},{},{},{},{},{}",
+        csv_field(&result.country_code),
+        csv_field(&result.country_name),
+        csv_field(&result.name),
+        csv_field(&result.code),
+        csv_field(result.state.as_deref().unwrap_or("")),
+        result.valid
+    )
+}
+
+/// CSV header for tax ID rows.
+pub const TAX_HEADER: &str = "country,country_name,name,code,holder_type,valid";
+
+/// Format a single tax ID result as a CSV row.
+pub fn tax_row(result: &TaxIdResult) -> String {
+    format!(
+        "{},{},{},{},{},{}",
+        csv_field(&result.country_code),
+        csv_field(&result.country_name),
+        csv_field(&result.name),
+        csv_field(&result.code),
+        csv_field(result.holder_type.as_deref().unwrap_or("")),
+        result.valid
+    )
+}
+
+/// CSV header for passport rows.
+pub const PASSPORT_HEADER: &str = "country,country_name,name,code,valid";
+
+/// Format a single passport result as a CSV row.
+pub fn passport_row(result: &PassportResult) -> String {
+    format!(
+        "{},{},{},{},{}",
+        csv_field(&result.country_code),
+        csv_field(&result.country_name),
+        csv_field(&result.name),
+        csv_field(&result.code),
+        result.valid
+    )
 }

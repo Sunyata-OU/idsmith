@@ -11,6 +11,13 @@ fn main() {
     }
     let duration = start.elapsed();
 
-    println!("idsmith (rust): {} iterations in {:.4} seconds", iterations, duration.as_secs_f64());
-    println!("Throughput: {:.2} ops/sec", iterations as f64 / duration.as_secs_f64());
+    println!(
+        "idsmith (rust): {} iterations in {:.4} seconds",
+        iterations,
+        duration.as_secs_f64()
+    );
+    println!(
+        "Throughput: {:.2} ops/sec",
+        iterations as f64 / duration.as_secs_f64()
+    );
 }

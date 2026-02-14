@@ -40,7 +40,7 @@ pub fn generate(_opts: &GenOptions, rng: &mut impl Rng) -> AccountResult {
 
     AccountResult {
         country_code: "BR".into(),
-        country_name: "Brazil".into(),
+        country_name: crate::countries::get_country_name("BR").unwrap_or("Unknown").to_string(),
         format_name: "Bank + Branch + Account".into(),
         bank_code: Some(bank_str),
         branch_code: Some(format!("{}-{}", branch_str, branch_check)),

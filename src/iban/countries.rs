@@ -88,6 +88,39 @@ const VA: &[BbanField] = &[f(18, N)];
 const VG: &[BbanField] = &[f(4, C), f(16, N)];
 const XK: &[BbanField] = &[f(16, N)];
 
+// African & Middle Eastern IBAN countries
+const AO: &[BbanField] = &[f(21, N)];
+// UEMOA zone (French-influenced, 1 alpha + 23 numeric)
+const BF: &[BbanField] = &[f(1, A), f(23, N)];
+const BI: &[BbanField] = &[f(5, N), f(5, N), f(11, N), f(2, N)];
+const BJ: &[BbanField] = &[f(1, A), f(23, N)];
+// CEMAC zone (all numeric, 5+5+11+2)
+const CF: &[BbanField] = &[f(5, N), f(5, N), f(11, N), f(2, N)];
+const CG: &[BbanField] = &[f(5, N), f(5, N), f(11, N), f(2, N)];
+const CI: &[BbanField] = &[f(1, A), f(23, N)];
+const CM: &[BbanField] = &[f(5, N), f(5, N), f(11, N), f(2, N)];
+const CV: &[BbanField] = &[f(21, N)];
+const DJ: &[BbanField] = &[f(5, N), f(5, N), f(11, N), f(2, N)];
+const DZ: &[BbanField] = &[f(22, N)];
+const GA: &[BbanField] = &[f(5, N), f(5, N), f(11, N), f(2, N)];
+const GN: &[BbanField] = &[f(24, N)];
+const GQ: &[BbanField] = &[f(5, N), f(5, N), f(11, N), f(2, N)];
+const GW: &[BbanField] = &[f(2, C), f(19, N)];
+const IR: &[BbanField] = &[f(22, N)];
+const KM: &[BbanField] = &[f(5, N), f(5, N), f(11, N), f(2, N)];
+const MA: &[BbanField] = &[f(24, N)];
+const MG: &[BbanField] = &[f(5, N), f(5, N), f(11, N), f(2, N)];
+const ML: &[BbanField] = &[f(1, A), f(23, N)];
+const MZ: &[BbanField] = &[f(21, N)];
+const NE: &[BbanField] = &[f(1, A), f(23, N)];
+const SN: &[BbanField] = &[f(1, A), f(23, N)];
+const TD: &[BbanField] = &[f(5, N), f(5, N), f(11, N), f(2, N)];
+const TG: &[BbanField] = &[f(1, A), f(23, N)];
+// Crown Dependencies (GB format)
+const GG: &[BbanField] = &[f(4, A), f(6, N), f(8, N)];
+const IM: &[BbanField] = &[f(4, A), f(6, N), f(8, N)];
+const JE: &[BbanField] = &[f(4, A), f(6, N), f(8, N)];
+
 pub(crate) const ALL_FORMATS: &[CountryFormat] = &[
     CountryFormat {
         code: "AD",
@@ -100,6 +133,10 @@ pub(crate) const ALL_FORMATS: &[CountryFormat] = &[
     CountryFormat {
         code: "AL",
         fields: AL,
+    },
+    CountryFormat {
+        code: "AO",
+        fields: AO,
     },
     CountryFormat {
         code: "AT",
@@ -122,12 +159,24 @@ pub(crate) const ALL_FORMATS: &[CountryFormat] = &[
         fields: BE,
     },
     CountryFormat {
+        code: "BF",
+        fields: BF,
+    },
+    CountryFormat {
         code: "BG",
         fields: BG,
     },
     CountryFormat {
         code: "BH",
         fields: BH,
+    },
+    CountryFormat {
+        code: "BI",
+        fields: BI,
+    },
+    CountryFormat {
+        code: "BJ",
+        fields: BJ,
     },
     CountryFormat {
         code: "BR",
@@ -138,8 +187,28 @@ pub(crate) const ALL_FORMATS: &[CountryFormat] = &[
         fields: BY,
     },
     CountryFormat {
+        code: "CF",
+        fields: CF,
+    },
+    CountryFormat {
+        code: "CG",
+        fields: CG,
+    },
+    CountryFormat {
         code: "CH",
         fields: CH,
+    },
+    CountryFormat {
+        code: "CI",
+        fields: CI,
+    },
+    CountryFormat {
+        code: "CM",
+        fields: CM,
+    },
+    CountryFormat {
+        code: "CV",
+        fields: CV,
     },
     CountryFormat {
         code: "CR",
@@ -158,8 +227,16 @@ pub(crate) const ALL_FORMATS: &[CountryFormat] = &[
         fields: DE,
     },
     CountryFormat {
+        code: "DJ",
+        fields: DJ,
+    },
+    CountryFormat {
         code: "DK",
         fields: DK,
+    },
+    CountryFormat {
+        code: "DZ",
+        fields: DZ,
     },
     CountryFormat {
         code: "DO",
@@ -190,12 +267,20 @@ pub(crate) const ALL_FORMATS: &[CountryFormat] = &[
         fields: FR,
     },
     CountryFormat {
+        code: "GA",
+        fields: GA,
+    },
+    CountryFormat {
         code: "GB",
         fields: GB,
     },
     CountryFormat {
         code: "GE",
         fields: GE,
+    },
+    CountryFormat {
+        code: "GG",
+        fields: GG,
     },
     CountryFormat {
         code: "GF",
@@ -210,8 +295,16 @@ pub(crate) const ALL_FORMATS: &[CountryFormat] = &[
         fields: GL,
     },
     CountryFormat {
+        code: "GN",
+        fields: GN,
+    },
+    CountryFormat {
         code: "GP",
         fields: FR,
+    },
+    CountryFormat {
+        code: "GQ",
+        fields: GQ,
     },
     CountryFormat {
         code: "GR",
@@ -220,6 +313,10 @@ pub(crate) const ALL_FORMATS: &[CountryFormat] = &[
     CountryFormat {
         code: "GT",
         fields: GT,
+    },
+    CountryFormat {
+        code: "GW",
+        fields: GW,
     },
     CountryFormat {
         code: "HR",
@@ -238,6 +335,14 @@ pub(crate) const ALL_FORMATS: &[CountryFormat] = &[
         fields: IL,
     },
     CountryFormat {
+        code: "IM",
+        fields: IM,
+    },
+    CountryFormat {
+        code: "IR",
+        fields: IR,
+    },
+    CountryFormat {
         code: "IQ",
         fields: IQ,
     },
@@ -250,8 +355,16 @@ pub(crate) const ALL_FORMATS: &[CountryFormat] = &[
         fields: IT,
     },
     CountryFormat {
+        code: "JE",
+        fields: JE,
+    },
+    CountryFormat {
         code: "JO",
         fields: JO,
+    },
+    CountryFormat {
+        code: "KM",
+        fields: KM,
     },
     CountryFormat {
         code: "KW",
@@ -264,6 +377,18 @@ pub(crate) const ALL_FORMATS: &[CountryFormat] = &[
     CountryFormat {
         code: "LB",
         fields: LB,
+    },
+    CountryFormat {
+        code: "MA",
+        fields: MA,
+    },
+    CountryFormat {
+        code: "MG",
+        fields: MG,
+    },
+    CountryFormat {
+        code: "ML",
+        fields: ML,
     },
     CountryFormat {
         code: "LC",
@@ -322,6 +447,10 @@ pub(crate) const ALL_FORMATS: &[CountryFormat] = &[
         fields: MR,
     },
     CountryFormat {
+        code: "MZ",
+        fields: MZ,
+    },
+    CountryFormat {
         code: "MT",
         fields: MT,
     },
@@ -332,6 +461,10 @@ pub(crate) const ALL_FORMATS: &[CountryFormat] = &[
     CountryFormat {
         code: "NC",
         fields: FR,
+    },
+    CountryFormat {
+        code: "NE",
+        fields: NE,
     },
     CountryFormat {
         code: "NI",
@@ -422,6 +555,10 @@ pub(crate) const ALL_FORMATS: &[CountryFormat] = &[
         fields: SM,
     },
     CountryFormat {
+        code: "SN",
+        fields: SN,
+    },
+    CountryFormat {
         code: "SO",
         fields: SO,
     },
@@ -434,8 +571,16 @@ pub(crate) const ALL_FORMATS: &[CountryFormat] = &[
         fields: SV,
     },
     CountryFormat {
+        code: "TD",
+        fields: TD,
+    },
+    CountryFormat {
         code: "TF",
         fields: FR,
+    },
+    CountryFormat {
+        code: "TG",
+        fields: TG,
     },
     CountryFormat {
         code: "TL",

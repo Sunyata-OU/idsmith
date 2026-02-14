@@ -1,6 +1,5 @@
 pub mod checksum;
 pub mod date;
-pub mod generic;
 
 // Europe (existing)
 pub mod at;
@@ -36,6 +35,8 @@ pub mod br;
 pub mod ca;
 pub mod cl;
 pub mod co;
+pub mod cu;
+pub mod do_;
 pub mod ec;
 pub mod mx;
 pub mod pe;
@@ -57,8 +58,11 @@ pub mod th;
 pub mod tw;
 
 // Africa/Middle East
+pub mod dz;
 pub mod eg;
 pub mod il;
+pub mod mu;
+pub mod pk;
 pub mod za;
 
 use date::Gender;
@@ -87,7 +91,6 @@ type ParseFn = fn(&str) -> IdResult;
 
 struct RegistryEntry {
     code: &'static str,
-    country_name: &'static str,
     name: &'static str,
     generate: GenerateFn,
     validate: ValidateFn,
@@ -96,7 +99,6 @@ struct RegistryEntry {
 
 struct TerritoryAlias {
     code: &'static str,
-    country_name: &'static str,
     parent_code: &'static str,
 }
 
@@ -104,180 +106,146 @@ static TERRITORY_ALIASES: &[TerritoryAlias] = &[
     // US territories
     TerritoryAlias {
         code: "AS",
-        country_name: "American Samoa",
         parent_code: "US",
     },
     TerritoryAlias {
         code: "GU",
-        country_name: "Guam",
         parent_code: "US",
     },
     TerritoryAlias {
         code: "MP",
-        country_name: "Northern Mariana Islands",
         parent_code: "US",
     },
     TerritoryAlias {
         code: "PR",
-        country_name: "Puerto Rico",
         parent_code: "US",
     },
     TerritoryAlias {
         code: "UM",
-        country_name: "US Minor Outlying Islands",
         parent_code: "US",
     },
     TerritoryAlias {
         code: "VI",
-        country_name: "US Virgin Islands",
         parent_code: "US",
     },
     // Australian territories
     TerritoryAlias {
         code: "CC",
-        country_name: "Cocos (Keeling) Islands",
         parent_code: "AU",
     },
     TerritoryAlias {
         code: "CX",
-        country_name: "Christmas Island",
         parent_code: "AU",
     },
     TerritoryAlias {
         code: "HM",
-        country_name: "Heard Island and McDonald Islands",
         parent_code: "AU",
     },
     TerritoryAlias {
         code: "NF",
-        country_name: "Norfolk Island",
         parent_code: "AU",
     },
     // NZ territories
     TerritoryAlias {
         code: "CK",
-        country_name: "Cook Islands",
         parent_code: "NZ",
     },
     TerritoryAlias {
         code: "NU",
-        country_name: "Niue",
         parent_code: "NZ",
     },
     TerritoryAlias {
         code: "PN",
-        country_name: "Pitcairn Islands",
         parent_code: "NZ",
     },
     TerritoryAlias {
         code: "TK",
-        country_name: "Tokelau",
         parent_code: "NZ",
     },
     // French territory
     TerritoryAlias {
         code: "BL",
-        country_name: "Saint Barthelemy",
         parent_code: "FR",
     },
     // UK territories
     TerritoryAlias {
         code: "GS",
-        country_name: "South Georgia and the South Sandwich Islands",
         parent_code: "GB",
     },
     TerritoryAlias {
         code: "IO",
-        country_name: "British Indian Ocean Territory",
         parent_code: "GB",
     },
     TerritoryAlias {
         code: "SH",
-        country_name: "Saint Helena, Ascension and Tristan da Cunha",
         parent_code: "GB",
     },
     // Norwegian territories
     TerritoryAlias {
         code: "BV",
-        country_name: "Bouvet Island",
         parent_code: "NO",
     },
     TerritoryAlias {
         code: "SJ",
-        country_name: "Svalbard and Jan Mayen",
         parent_code: "NO",
     },
     // Danish territories
     TerritoryAlias {
         code: "FO",
-        country_name: "Faroe Islands",
         parent_code: "DK",
     },
     TerritoryAlias {
         code: "GL",
-        country_name: "Greenland",
         parent_code: "DK",
     },
     // French territories
     TerritoryAlias {
         code: "GF",
-        country_name: "French Guiana",
         parent_code: "FR",
     },
     TerritoryAlias {
         code: "GP",
-        country_name: "Guadeloupe",
         parent_code: "FR",
     },
     TerritoryAlias {
         code: "MF",
-        country_name: "Saint Martin",
         parent_code: "FR",
     },
     TerritoryAlias {
         code: "MQ",
-        country_name: "Martinique",
         parent_code: "FR",
     },
     TerritoryAlias {
         code: "NC",
-        country_name: "New Caledonia",
         parent_code: "FR",
     },
     TerritoryAlias {
         code: "PF",
-        country_name: "French Polynesia",
         parent_code: "FR",
     },
     TerritoryAlias {
         code: "PM",
-        country_name: "Saint Pierre and Miquelon",
         parent_code: "FR",
     },
     TerritoryAlias {
         code: "RE",
-        country_name: "Reunion",
         parent_code: "FR",
     },
     TerritoryAlias {
         code: "TF",
-        country_name: "French Southern Territories",
         parent_code: "FR",
     },
     TerritoryAlias {
         code: "WF",
-        country_name: "Wallis and Futuna",
         parent_code: "FR",
     },
     TerritoryAlias {
         code: "YT",
-        country_name: "Mayotte",
         parent_code: "FR",
     },
     // UK territory
     TerritoryAlias {
         code: "VG",
-        country_name: "British Virgin Islands",
         parent_code: "GB",
     },
 ];
@@ -317,7 +285,6 @@ impl Registry {
             // ── Europe (existing 31) ──
             RegistryEntry {
                 code: "EE",
-                country_name: "Estonia",
                 name: "Isikukood",
                 generate: ee::generate,
                 validate: ee::validate,
@@ -325,7 +292,6 @@ impl Registry {
             },
             RegistryEntry {
                 code: "LT",
-                country_name: "Lithuania",
                 name: "Asmens kodas",
                 generate: ee::generate,
                 validate: ee::validate,
@@ -333,7 +299,6 @@ impl Registry {
             },
             RegistryEntry {
                 code: "LV",
-                country_name: "Latvia",
                 name: "Personas kods",
                 generate: lv::generate,
                 validate: lv::validate,
@@ -341,7 +306,6 @@ impl Registry {
             },
             RegistryEntry {
                 code: "FI",
-                country_name: "Finland",
                 name: "Henkilotunnus",
                 generate: fi::generate,
                 validate: fi::validate,
@@ -349,7 +313,6 @@ impl Registry {
             },
             RegistryEntry {
                 code: "SE",
-                country_name: "Sweden",
                 name: "Personnummer",
                 generate: se::generate,
                 validate: se::validate,
@@ -357,7 +320,6 @@ impl Registry {
             },
             RegistryEntry {
                 code: "NO",
-                country_name: "Norway",
                 name: "Fodselsnummer",
                 generate: no::generate,
                 validate: no::validate,
@@ -365,7 +327,6 @@ impl Registry {
             },
             RegistryEntry {
                 code: "DK",
-                country_name: "Denmark",
                 name: "CPR-nummer",
                 generate: dk::generate,
                 validate: dk::validate,
@@ -373,7 +334,6 @@ impl Registry {
             },
             RegistryEntry {
                 code: "IS",
-                country_name: "Iceland",
                 name: "Kennitala",
                 generate: is_::generate,
                 validate: is_::validate,
@@ -381,7 +341,6 @@ impl Registry {
             },
             RegistryEntry {
                 code: "DE",
-                country_name: "Germany",
                 name: "Steuerliche IdNr",
                 generate: de::generate,
                 validate: de::validate,
@@ -389,7 +348,6 @@ impl Registry {
             },
             RegistryEntry {
                 code: "AT",
-                country_name: "Austria",
                 name: "Sozialversicherungsnr",
                 generate: at::generate,
                 validate: at::validate,
@@ -397,7 +355,6 @@ impl Registry {
             },
             RegistryEntry {
                 code: "CH",
-                country_name: "Switzerland",
                 name: "AHV-Nummer",
                 generate: ch::generate,
                 validate: ch::validate,
@@ -405,7 +362,6 @@ impl Registry {
             },
             RegistryEntry {
                 code: "NL",
-                country_name: "Netherlands",
                 name: "BSN",
                 generate: nl::generate,
                 validate: nl::validate,
@@ -413,7 +369,6 @@ impl Registry {
             },
             RegistryEntry {
                 code: "BE",
-                country_name: "Belgium",
                 name: "Rijksregisternr",
                 generate: be::generate,
                 validate: be::validate,
@@ -421,7 +376,6 @@ impl Registry {
             },
             RegistryEntry {
                 code: "FR",
-                country_name: "France",
                 name: "NIR",
                 generate: fr::generate,
                 validate: fr::validate,
@@ -429,7 +383,6 @@ impl Registry {
             },
             RegistryEntry {
                 code: "ES",
-                country_name: "Spain",
                 name: "DNI",
                 generate: es::generate,
                 validate: es::validate,
@@ -437,7 +390,6 @@ impl Registry {
             },
             RegistryEntry {
                 code: "PT",
-                country_name: "Portugal",
                 name: "NIF",
                 generate: pt::generate,
                 validate: pt::validate,
@@ -445,7 +397,6 @@ impl Registry {
             },
             RegistryEntry {
                 code: "IT",
-                country_name: "Italy",
                 name: "Codice Fiscale",
                 generate: it::generate,
                 validate: it::validate,
@@ -453,7 +404,6 @@ impl Registry {
             },
             RegistryEntry {
                 code: "GB",
-                country_name: "United Kingdom",
                 name: "NINO",
                 generate: gb::generate,
                 validate: gb::validate,
@@ -461,7 +411,6 @@ impl Registry {
             },
             RegistryEntry {
                 code: "IE",
-                country_name: "Ireland",
                 name: "PPS Number",
                 generate: ie::generate,
                 validate: ie::validate,
@@ -469,7 +418,6 @@ impl Registry {
             },
             RegistryEntry {
                 code: "PL",
-                country_name: "Poland",
                 name: "PESEL",
                 generate: pl::generate,
                 validate: pl::validate,
@@ -477,7 +425,6 @@ impl Registry {
             },
             RegistryEntry {
                 code: "CZ",
-                country_name: "Czech Republic",
                 name: "Rodne cislo",
                 generate: cz::generate,
                 validate: cz::validate,
@@ -485,7 +432,6 @@ impl Registry {
             },
             RegistryEntry {
                 code: "SK",
-                country_name: "Slovakia",
                 name: "Rodne cislo",
                 generate: cz::generate,
                 validate: cz::validate,
@@ -493,7 +439,6 @@ impl Registry {
             },
             RegistryEntry {
                 code: "RO",
-                country_name: "Romania",
                 name: "CNP",
                 generate: ro::generate,
                 validate: ro::validate,
@@ -501,7 +446,6 @@ impl Registry {
             },
             RegistryEntry {
                 code: "BG",
-                country_name: "Bulgaria",
                 name: "EGN",
                 generate: bg::generate,
                 validate: bg::validate,
@@ -509,7 +453,6 @@ impl Registry {
             },
             RegistryEntry {
                 code: "HR",
-                country_name: "Croatia",
                 name: "OIB",
                 generate: hr::generate,
                 validate: hr::validate,
@@ -517,7 +460,6 @@ impl Registry {
             },
             RegistryEntry {
                 code: "SI",
-                country_name: "Slovenia",
                 name: "EMSO",
                 generate: gen_si,
                 validate: jmbg::validate,
@@ -525,7 +467,6 @@ impl Registry {
             },
             RegistryEntry {
                 code: "RS",
-                country_name: "Serbia",
                 name: "JMBG",
                 generate: gen_rs,
                 validate: jmbg::validate,
@@ -533,7 +474,6 @@ impl Registry {
             },
             RegistryEntry {
                 code: "BA",
-                country_name: "Bosnia and Herzegovina",
                 name: "JMBG",
                 generate: gen_ba,
                 validate: jmbg::validate,
@@ -541,7 +481,6 @@ impl Registry {
             },
             RegistryEntry {
                 code: "ME",
-                country_name: "Montenegro",
                 name: "JMBG",
                 generate: gen_me,
                 validate: jmbg::validate,
@@ -549,7 +488,6 @@ impl Registry {
             },
             RegistryEntry {
                 code: "TR",
-                country_name: "Turkey",
                 name: "TC Kimlik No",
                 generate: tr::generate,
                 validate: tr::validate,
@@ -557,7 +495,6 @@ impl Registry {
             },
             RegistryEntry {
                 code: "GR",
-                country_name: "Greece",
                 name: "AMKA",
                 generate: gr::generate,
                 validate: gr::validate,
@@ -566,7 +503,6 @@ impl Registry {
             // ── Americas (10 new) ──
             RegistryEntry {
                 code: "US",
-                country_name: "United States",
                 name: "SSN",
                 generate: us::generate,
                 validate: us::validate,
@@ -574,7 +510,6 @@ impl Registry {
             },
             RegistryEntry {
                 code: "CA",
-                country_name: "Canada",
                 name: "SIN",
                 generate: ca::generate,
                 validate: ca::validate,
@@ -582,7 +517,6 @@ impl Registry {
             },
             RegistryEntry {
                 code: "BR",
-                country_name: "Brazil",
                 name: "CPF",
                 generate: br::generate,
                 validate: br::validate,
@@ -590,7 +524,6 @@ impl Registry {
             },
             RegistryEntry {
                 code: "AR",
-                country_name: "Argentina",
                 name: "CUIL",
                 generate: ar::generate,
                 validate: ar::validate,
@@ -598,7 +531,6 @@ impl Registry {
             },
             RegistryEntry {
                 code: "CL",
-                country_name: "Chile",
                 name: "RUT",
                 generate: cl::generate,
                 validate: cl::validate,
@@ -606,7 +538,6 @@ impl Registry {
             },
             RegistryEntry {
                 code: "CO",
-                country_name: "Colombia",
                 name: "NIT",
                 generate: co::generate,
                 validate: co::validate,
@@ -614,15 +545,27 @@ impl Registry {
             },
             RegistryEntry {
                 code: "UY",
-                country_name: "Uruguay",
                 name: "CI",
                 generate: uy::generate,
                 validate: uy::validate,
                 parse: uy::parse,
             },
             RegistryEntry {
+                code: "CU",
+                name: "NI",
+                generate: cu::generate,
+                validate: cu::validate,
+                parse: cu::parse,
+            },
+            RegistryEntry {
+                code: "DO",
+                name: "Cedula",
+                generate: do_::generate,
+                validate: do_::validate,
+                parse: do_::parse,
+            },
+            RegistryEntry {
                 code: "EC",
-                country_name: "Ecuador",
                 name: "Cedula",
                 generate: ec::generate,
                 validate: ec::validate,
@@ -630,7 +573,6 @@ impl Registry {
             },
             RegistryEntry {
                 code: "PE",
-                country_name: "Peru",
                 name: "DNI",
                 generate: pe::generate,
                 validate: pe::validate,
@@ -638,7 +580,6 @@ impl Registry {
             },
             RegistryEntry {
                 code: "MX",
-                country_name: "Mexico",
                 name: "CURP",
                 generate: mx::generate,
                 validate: mx::validate,
@@ -647,7 +588,6 @@ impl Registry {
             // ── Asia-Pacific (12 new) ──
             RegistryEntry {
                 code: "CN",
-                country_name: "China",
                 name: "Resident ID",
                 generate: cn::generate,
                 validate: cn::validate,
@@ -655,7 +595,6 @@ impl Registry {
             },
             RegistryEntry {
                 code: "IN",
-                country_name: "India",
                 name: "Aadhaar",
                 generate: in_::generate,
                 validate: in_::validate,
@@ -663,7 +602,6 @@ impl Registry {
             },
             RegistryEntry {
                 code: "JP",
-                country_name: "Japan",
                 name: "My Number",
                 generate: jp::generate,
                 validate: jp::validate,
@@ -671,7 +609,6 @@ impl Registry {
             },
             RegistryEntry {
                 code: "KR",
-                country_name: "South Korea",
                 name: "RRN",
                 generate: kr::generate,
                 validate: kr::validate,
@@ -679,7 +616,6 @@ impl Registry {
             },
             RegistryEntry {
                 code: "TW",
-                country_name: "Taiwan",
                 name: "National ID",
                 generate: tw::generate,
                 validate: tw::validate,
@@ -687,7 +623,6 @@ impl Registry {
             },
             RegistryEntry {
                 code: "TH",
-                country_name: "Thailand",
                 name: "Citizen ID",
                 generate: th::generate,
                 validate: th::validate,
@@ -695,7 +630,6 @@ impl Registry {
             },
             RegistryEntry {
                 code: "SG",
-                country_name: "Singapore",
                 name: "NRIC",
                 generate: sg::generate,
                 validate: sg::validate,
@@ -703,7 +637,6 @@ impl Registry {
             },
             RegistryEntry {
                 code: "MY",
-                country_name: "Malaysia",
                 name: "MyKad",
                 generate: my::generate,
                 validate: my::validate,
@@ -711,7 +644,6 @@ impl Registry {
             },
             RegistryEntry {
                 code: "ID",
-                country_name: "Indonesia",
                 name: "NIK",
                 generate: id_::generate,
                 validate: id_::validate,
@@ -719,7 +651,6 @@ impl Registry {
             },
             RegistryEntry {
                 code: "HK",
-                country_name: "Hong Kong",
                 name: "HKID",
                 generate: hk::generate,
                 validate: hk::validate,
@@ -727,7 +658,6 @@ impl Registry {
             },
             RegistryEntry {
                 code: "AU",
-                country_name: "Australia",
                 name: "TFN",
                 generate: au::generate,
                 validate: au::validate,
@@ -735,7 +665,6 @@ impl Registry {
             },
             RegistryEntry {
                 code: "NZ",
-                country_name: "New Zealand",
                 name: "IRD",
                 generate: nz::generate,
                 validate: nz::validate,
@@ -744,7 +673,6 @@ impl Registry {
             // ── Africa/Middle East (3 new) ──
             RegistryEntry {
                 code: "ZA",
-                country_name: "South Africa",
                 name: "SA ID",
                 generate: za::generate,
                 validate: za::validate,
@@ -752,7 +680,6 @@ impl Registry {
             },
             RegistryEntry {
                 code: "IL",
-                country_name: "Israel",
                 name: "Teudat Zehut",
                 generate: il::generate,
                 validate: il::validate,
@@ -760,11 +687,31 @@ impl Registry {
             },
             RegistryEntry {
                 code: "EG",
-                country_name: "Egypt",
                 name: "National ID",
                 generate: eg::generate,
                 validate: eg::validate,
                 parse: eg::parse,
+            },
+            RegistryEntry {
+                code: "DZ",
+                name: "NIF",
+                generate: dz::generate,
+                validate: dz::validate,
+                parse: dz::parse,
+            },
+            RegistryEntry {
+                code: "MU",
+                name: "NID",
+                generate: mu::generate,
+                validate: mu::validate,
+                parse: mu::parse,
+            },
+            RegistryEntry {
+                code: "PK",
+                name: "CNIC",
+                generate: pk::generate,
+                validate: pk::validate,
+                parse: pk::parse,
             },
         ];
         Registry { entries }
@@ -780,20 +727,13 @@ impl Registry {
         opts: &GenOptions,
         rng: &mut rand::rngs::ThreadRng,
     ) -> Option<String> {
-        // Tier 1: specific implementation
         if let Some(entry) = self.find(country) {
             return Some((entry.generate)(opts, rng));
         }
-        // Tier 2: generic fallback
-        if let Some(id) = generic::generate(country, opts, rng) {
-            return Some(id);
-        }
-        // Tier 3: territory alias
         if let Some(alias) = resolve_alias(country) {
             if let Some(entry) = self.find(alias.parent_code) {
                 return Some((entry.generate)(opts, rng));
             }
-            return generic::generate(alias.parent_code, opts, rng);
         }
         None
     }
@@ -802,14 +742,10 @@ impl Registry {
         if let Some(entry) = self.find(country) {
             return Some((entry.validate)(code));
         }
-        if let Some(valid) = generic::validate(country, code) {
-            return Some(valid);
-        }
         if let Some(alias) = resolve_alias(country) {
             if let Some(entry) = self.find(alias.parent_code) {
                 return Some((entry.validate)(code));
             }
-            return generic::validate(alias.parent_code, code);
         }
         None
     }
@@ -817,13 +753,11 @@ impl Registry {
     pub fn parse(&self, country: &str, code: &str) -> Option<IdResult> {
         let mut result = if let Some(entry) = self.find(country) {
             (entry.parse)(code)
-        } else if let Some(res) = generic::parse(country, code) {
-            res
         } else if let Some(alias) = resolve_alias(country) {
             if let Some(entry) = self.find(alias.parent_code) {
                 (entry.parse)(code)
             } else {
-                generic::parse(alias.parent_code, code)?
+                return None;
             }
         } else {
             return None;
@@ -836,34 +770,20 @@ impl Registry {
         if let Some(e) = self.find(country) {
             return Some(e.name);
         }
-        if let Some(name) = generic::id_name(country) {
-            return Some(name);
-        }
         if let Some(alias) = resolve_alias(country) {
             if let Some(e) = self.find(alias.parent_code) {
                 return Some(e.name);
             }
-            return generic::id_name(alias.parent_code);
         }
         None
     }
 
     pub fn country_name(&self, country: &str) -> Option<&str> {
-        if let Some(e) = self.find(country) {
-            return Some(e.country_name);
-        }
-        if let Some(name) = generic::country_name(country) {
-            return Some(name);
-        }
-        if let Some(alias) = resolve_alias(country) {
-            return Some(alias.country_name);
-        }
-        None
+        crate::countries::get_country_name(country)
     }
 
     pub fn is_supported(&self, country: &str) -> bool {
         self.find(country).is_some()
-            || generic::is_supported(country)
             || resolve_alias(country).is_some()
     }
 
@@ -872,12 +792,7 @@ impl Registry {
         let mut result = Vec::new();
         for e in &self.entries {
             if seen.insert(e.code) {
-                result.push((e.code, e.country_name, e.name));
-            }
-        }
-        for item in generic::list_countries() {
-            if seen.insert(item.0) {
-                result.push(item);
+                result.push((e.code, crate::countries::get_country_name(e.code).unwrap_or("Unknown"), e.name));
             }
         }
         for alias in TERRITORY_ALIASES {
@@ -886,7 +801,7 @@ impl Registry {
                     .find(alias.parent_code)
                     .map(|e| e.name)
                     .unwrap_or("National ID");
-                result.push((alias.code, alias.country_name, name));
+                result.push((alias.code, crate::countries::get_country_name(alias.code).unwrap_or("Unknown"), name));
             }
         }
         result.sort_by_key(|(code, _, _)| *code);

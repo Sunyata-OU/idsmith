@@ -1,9 +1,9 @@
 [package]
 name = "idsmith"
-version = "0.4.0"
+version = "0.4.1"
 edition = "2021"
 authors = ["Tony Benoy <me@tonybenoy.com>"]
-description = "Validate and generate checksum-correct IBANs, personal IDs, bank accounts, credit cards, SWIFT/BIC, and company IDs for 252 countries."
+description = "Validate and generate checksum-correct IBANs, personal IDs, bank accounts, credit cards, SWIFT/BIC, company IDs, driver's licenses, tax IDs, and passports."
 license = "MIT"
 keywords = ["validator", "iban", "personal-id", "test-data", "generator"]
 categories = ["development-tools::testing", "finance", "command-line-utilities", "value-formatting"]
@@ -20,6 +20,14 @@ path = "src/lib.rs"
 name = "idsmith"
 path = "src/main.rs"
 required-features = ["cli"]
+
+[[bin]]
+name = "bench_idsmith"
+path = "benchmarks/bench_idsmith.rs"
+
+[[bin]]
+name = "bench_docs"
+path = "benchmarks/bench_docs.rs"
 
 [dependencies]
 rand = "0.8"

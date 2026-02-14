@@ -125,6 +125,74 @@
 
 ---
 
+#### `DriverLicense`
+
+| Method | Signature | Returns |
+|--------|-----------|---------|
+| `generate` | `(country: str \| None = None)` | `dict` |
+| `validate` | `(country: str, code: str)` | `bool` |
+| `list_countries` | `()` | `list[dict]` |
+| `is_supported` | `(country: str)` | `bool` |
+
+**`generate` returns:**
+```python
+{
+    "country_code": "US",
+    "country_name": "United States",
+    "name": "Driver's License",
+    "code": "A123456789012",
+    "valid": True
+}
+```
+
+---
+
+#### `TaxId`
+
+| Method | Signature | Returns |
+|--------|-----------|---------|
+| `generate` | `(country: str \| None = None, holder_type: str \| None = None)` | `dict` |
+| `validate` | `(country: str, code: str)` | `bool` |
+| `list_countries` | `()` | `list[dict]` |
+| `is_supported` | `(country: str)` | `bool` |
+
+**`holder_type` parameter (IN only):** `"P"` (Person), `"C"` (Company), `"H"` (HUF), `"F"` (Firm), `"A"` (AOP), `"T"` (Trust), `"B"` (BOI), `"L"` (Local Authority), `"J"` (Artificial Juridical Person), `"G"` (Government).
+
+**`generate` returns:**
+```python
+{
+    "country_code": "IN",
+    "country_name": "India",
+    "name": "PAN",
+    "code": "ABCDE1234F",
+    "valid": True
+}
+```
+
+---
+
+#### `Passport`
+
+| Method | Signature | Returns |
+|--------|-----------|---------|
+| `generate` | `(country: str \| None = None)` | `dict` |
+| `validate` | `(country: str, code: str)` | `bool` |
+| `list_countries` | `()` | `list[dict]` |
+| `is_supported` | `(country: str)` | `bool` |
+
+**`generate` returns:**
+```python
+{
+    "country_code": "US",
+    "country_name": "United States",
+    "name": "Passport",
+    "code": "123456789",
+    "valid": True
+}
+```
+
+---
+
 ### Functions
 
 | Function | Signature | Returns |

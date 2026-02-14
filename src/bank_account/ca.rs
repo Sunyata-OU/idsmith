@@ -22,7 +22,7 @@ pub fn generate(_opts: &GenOptions, rng: &mut impl Rng) -> AccountResult {
 
     AccountResult {
         country_code: "CA".into(),
-        country_name: "Canada".into(),
+        country_name: crate::countries::get_country_name("CA").unwrap_or("Unknown").to_string(),
         format_name: "Inst + Transit + Account".into(),
         bank_code: Some(inst_str),
         branch_code: Some(transit_str),

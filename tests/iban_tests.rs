@@ -15,7 +15,7 @@ const ALL_IBAN_COUNTRIES: &[&str] = &[
 #[test]
 fn test_iban_country_count() {
     let countries = iban::supported_countries();
-    assert_eq!(countries.len(), 96, "expected 96 IBAN countries");
+    assert_eq!(countries.len(), 124, "expected 124 IBAN countries");
 }
 
 #[test]

@@ -393,6 +393,201 @@ impl Swift {
     }
 }
 
+// ── DriverLicense ──
+
+#[napi(object)]
+pub struct DriverLicenseResult {
+    pub country_code: String,
+    pub country_name: String,
+    pub name: String,
+    pub code: String,
+    pub state: Option<String>,
+    pub valid: bool,
+}
+
+impl From<idsmith::driver_license::DriverLicenseResult> for DriverLicenseResult {
+    fn from(r: idsmith::driver_license::DriverLicenseResult) -> Self {
+        Self {
+            country_code: r.country_code,
+            country_name: r.country_name,
+            name: r.name,
+            code: r.code,
+            state: r.state,
+            valid: r.valid,
+        }
+    }
+}
+
+#[napi]
+pub struct DriverLicense;
+
+#[napi]
+impl DriverLicense {
+    #[napi(factory)]
+    pub fn create() -> Self {
+        Self
+    }
+
+    #[napi]
+    pub fn generate(country: Option<String>, state: Option<String>) -> Result<DriverLicenseResult> {
+        let mut rng = thread_rng();
+        let opts = idsmith::driver_license::GenOptions { country, state };
+        idsmith::driver_licenses()
+            .generate(&opts, &mut rng)
+            .map(DriverLicenseResult::from)
+            .ok_or_else(|| {
+                Error::new(Status::GenericFailure, "Failed to generate driver's license")
+            })
+    }
+
+    #[napi]
+    pub fn validate(country: String, code: String) -> bool {
+        idsmith::driver_licenses().validate(&country, &code)
+    }
+
+    #[napi]
+    pub fn list_countries() -> Vec<CountryInfo> {
+        idsmith::driver_licenses()
+            .list_countries()
+            .iter()
+            .map(|(code, country_name, id_name)| CountryInfo {
+                code: code.to_string(),
+                country_name: country_name.to_string(),
+                id_name: id_name.to_string(),
+            })
+            .collect()
+    }
+}
+
+// ── TaxId ──
+
+#[napi(object)]
+pub struct TaxIdResult {
+    pub country_code: String,
+    pub country_name: String,
+    pub name: String,
+    pub code: String,
+    pub holder_type: Option<String>,
+    pub valid: bool,
+}
+
+impl From<idsmith::tax_id::TaxIdResult> for TaxIdResult {
+    fn from(r: idsmith::tax_id::TaxIdResult) -> Self {
+        Self {
+            country_code: r.country_code,
+            country_name: r.country_name,
+            name: r.name,
+            code: r.code,
+            holder_type: r.holder_type,
+            valid: r.valid,
+        }
+    }
+}
+
+#[napi]
+pub struct TaxId;
+
+#[napi]
+impl TaxId {
+    #[napi(factory)]
+    pub fn create() -> Self {
+        Self
+    }
+
+    #[napi]
+    pub fn generate(country: Option<String>, holder_type: Option<String>) -> Result<TaxIdResult> {
+        let mut rng = thread_rng();
+        let opts = idsmith::tax_id::GenOptions {
+            country,
+            holder_type,
+        };
+        idsmith::tax_ids()
+            .generate(&opts, &mut rng)
+            .map(TaxIdResult::from)
+            .ok_or_else(|| Error::new(Status::GenericFailure, "Failed to generate tax ID"))
+    }
+
+    #[napi]
+    pub fn validate(country: String, code: String) -> bool {
+        idsmith::tax_ids().validate(&country, &code)
+    }
+
+    #[napi]
+    pub fn list_countries() -> Vec<CountryInfo> {
+        idsmith::tax_ids()
+            .list_countries()
+            .iter()
+            .map(|(code, country_name, id_name)| CountryInfo {
+                code: code.to_string(),
+                country_name: country_name.to_string(),
+                id_name: id_name.to_string(),
+            })
+            .collect()
+    }
+}
+
+// ── Passport ──
+
+#[napi(object)]
+pub struct PassportResult {
+    pub country_code: String,
+    pub country_name: String,
+    pub name: String,
+    pub code: String,
+    pub valid: bool,
+}
+
+impl From<idsmith::passport::PassportResult> for PassportResult {
+    fn from(r: idsmith::passport::PassportResult) -> Self {
+        Self {
+            country_code: r.country_code,
+            country_name: r.country_name,
+            name: r.name,
+            code: r.code,
+            valid: r.valid,
+        }
+    }
+}
+
+#[napi]
+pub struct Passport;
+
+#[napi]
+impl Passport {
+    #[napi(factory)]
+    pub fn create() -> Self {
+        Self
+    }
+
+    #[napi]
+    pub fn generate(country: Option<String>) -> Result<PassportResult> {
+        let mut rng = thread_rng();
+        let opts = idsmith::passport::GenOptions { country };
+        idsmith::passports()
+            .generate(&opts, &mut rng)
+            .map(PassportResult::from)
+            .ok_or_else(|| Error::new(Status::GenericFailure, "Failed to generate passport"))
+    }
+
+    #[napi]
+    pub fn validate(country: String, code: String) -> bool {
+        idsmith::passports().validate(&country, &code)
+    }
+
+    #[napi]
+    pub fn list_countries() -> Vec<CountryInfo> {
+        idsmith::passports()
+            .list_countries()
+            .iter()
+            .map(|(code, country_name, id_name)| CountryInfo {
+                code: code.to_string(),
+                country_name: country_name.to_string(),
+                id_name: id_name.to_string(),
+            })
+            .collect()
+    }
+}
+
 // ── IBAN functions ──
 
 #[napi]

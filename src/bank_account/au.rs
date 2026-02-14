@@ -19,7 +19,7 @@ pub fn generate(_opts: &GenOptions, rng: &mut impl Rng) -> AccountResult {
 
     AccountResult {
         country_code: "AU".into(),
-        country_name: "Australia".into(),
+        country_name: crate::countries::get_country_name("AU").unwrap_or("Unknown").to_string(),
         format_name: "BSB + Account".into(),
         bank_code: Some(bsb),
         branch_code: None,

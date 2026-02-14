@@ -3,25 +3,27 @@ use rand::thread_rng;
 use idsmith::personal_id::date::Gender;
 use idsmith::personal_id::{self, GenOptions};
 
-// All countries with specific implementations (56 total)
+// All countries with specific implementations (61 total)
 const ALL_SPECIFIC_COUNTRIES: &[&str] = &[
     // Europe (31)
     "AT", "BA", "BE", "BG", "CH", "CZ", "DE", "DK", "EE", "ES", "FI", "FR", "GB", "GR", "HR", "IE",
     "IS", "IT", "LT", "LV", "ME", "NL", "NO", "PL", "PT", "RO", "RS", "SE", "SI", "SK", "TR",
-    // Americas (10)
-    "US", "CA", "BR", "AR", "CL", "CO", "UY", "EC", "PE", "MX", // Asia-Pacific (12)
+    // Americas (12)
+    "US", "CA", "BR", "AR", "CL", "CO", "CU", "DO", "UY", "EC", "PE", "MX",
+    // Asia-Pacific (12)
     "CN", "IN", "JP", "KR", "TW", "TH", "SG", "MY", "ID", "HK", "AU", "NZ",
-    // Africa/Middle East (3)
-    "ZA", "IL", "EG",
+    // Africa/Middle East (5)
+    "ZA", "IL", "EG", "DZ", "MU", "PK",
 ];
 
 #[test]
 fn test_id_country_count() {
     let registry = personal_id::Registry::new();
     let countries = registry.list_countries();
+    // 61 specific + ~31 territory aliases
     assert!(
-        countries.len() >= 220,
-        "expected >= 220 personal ID countries, got {}",
+        countries.len() >= 90,
+        "expected >= 90 personal ID countries, got {}",
         countries.len()
     );
 }
@@ -58,7 +60,7 @@ fn test_all_specific_countries_parse() {
 }
 
 #[test]
-fn test_generic_countries_generate_valid() {
+fn test_all_listed_countries_generate_valid() {
     let registry = personal_id::Registry::new();
     let mut rng = thread_rng();
     let opts = GenOptions::default();
@@ -187,8 +189,11 @@ fn test_registry_name() {
     assert_eq!(registry.name("CN"), Some("Resident ID"));
     assert_eq!(registry.name("ZA"), Some("SA ID"));
     assert_eq!(registry.name("IN"), Some("Aadhaar"));
-    // Generic
-    assert_eq!(registry.name("NG"), Some("NIN"));
+    // New countries
+    assert_eq!(registry.name("CU"), Some("NI"));
+    assert_eq!(registry.name("DO"), Some("Cedula"));
+    assert_eq!(registry.name("MU"), Some("NID"));
+    assert_eq!(registry.name("PK"), Some("CNIC"));
     // Alias
     assert_eq!(registry.name("PR"), Some("SSN"));
 }
