@@ -1,7 +1,8 @@
 //! # idsmith
 //!
 //! Validate and generate checksum-correct IBANs, personal IDs, bank accounts,
-//! credit cards, SWIFT/BIC, company IDs, driver's licenses, tax IDs, and passports.
+//! credit cards, SWIFT/BIC, company IDs, driver's licenses, tax IDs, passports,
+//! LEI codes, and EU VAT numbers.
 //! Every identifier passes mod-97 (IBAN) and national checksum validation.
 //!
 //! ## Quick Start
@@ -27,7 +28,8 @@
 //!
 //! A comprehensive **Generator** and **Validator** for valid, checksum-correct
 //! identifiers. Supports IBANs, Personal IDs, Bank Accounts,
-//! Credit Cards, SWIFT/BIC, Company IDs, Driver's Licenses, Tax IDs, and Passports.
+//! Credit Cards, SWIFT/BIC, Company IDs, Driver's Licenses, Tax IDs, Passports,
+//! LEI codes, and EU VAT numbers.
 //!
 //! ## Quick Start (Generation)
 //!
@@ -62,10 +64,12 @@ pub mod countries;
 pub mod credit_card;
 pub mod driver_license;
 pub mod iban;
+pub mod lei;
 pub mod passport;
 pub mod personal_id;
 pub mod swift;
 pub mod tax_id;
+pub mod vat;
 
 #[cfg(feature = "csv")]
 pub mod csv;
@@ -121,9 +125,23 @@ pub fn tax_ids() -> &'static tax_id::Registry {
     REGISTRY.get_or_init(tax_id::Registry::new)
 }
 
+/// Global registry for LEI (Legal Entity Identifier) codes.
+/// Provides methods to generate and validate ISO 17442 LEI codes.
+pub fn lei_codes() -> &'static lei::Registry {
+    static REGISTRY: OnceLock<lei::Registry> = OnceLock::new();
+    REGISTRY.get_or_init(lei::Registry::new)
+}
+
 /// Global registry for passport numbers.
 /// Provides methods to generate and validate passport numbers for all countries.
 pub fn passports() -> &'static passport::Registry {
     static REGISTRY: OnceLock<passport::Registry> = OnceLock::new();
     REGISTRY.get_or_init(passport::Registry::new)
+}
+
+/// Global registry for VAT numbers.
+/// Provides methods to generate and validate EU VAT identification numbers.
+pub fn vat_ids() -> &'static vat::Registry {
+    static REGISTRY: OnceLock<vat::Registry> = OnceLock::new();
+    REGISTRY.get_or_init(vat::Registry::new)
 }

@@ -86,6 +86,15 @@ fn passport_result_to_dict(py: Python<'_>, r: &idsmith::passport::PassportResult
     dict.into()
 }
 
+fn lei_result_to_dict(py: Python<'_>, r: &idsmith::lei::LeiResult) -> PyObject {
+    let dict = PyDict::new(py);
+    dict.set_item("code", &r.code).unwrap();
+    dict.set_item("lou", &r.lou).unwrap();
+    dict.set_item("country_code", &r.country_code).unwrap();
+    dict.set_item("valid", r.valid).unwrap();
+    dict.into()
+}
+
 fn swift_result_to_dict(py: Python<'_>, r: &idsmith::swift::SwiftResult) -> PyObject {
     let dict = PyDict::new(py);
     dict.set_item("code", &r.code).unwrap();
@@ -93,6 +102,15 @@ fn swift_result_to_dict(py: Python<'_>, r: &idsmith::swift::SwiftResult) -> PyOb
     dict.set_item("country", &r.country).unwrap();
     dict.set_item("location", &r.location).unwrap();
     dict.set_item("branch", &r.branch).unwrap();
+    dict.set_item("valid", r.valid).unwrap();
+    dict.into()
+}
+
+fn vat_result_to_dict(py: Python<'_>, r: &idsmith::vat::VatResult) -> PyObject {
+    let dict = PyDict::new(py);
+    dict.set_item("code", &r.code).unwrap();
+    dict.set_item("country_code", &r.country_code).unwrap();
+    dict.set_item("country_name", &r.country_name).unwrap();
     dict.set_item("valid", r.valid).unwrap();
     dict.into()
 }
@@ -450,6 +468,67 @@ impl Passport {
     }
 }
 
+// ── LegalEntityId ──
+
+#[pyclass]
+struct LegalEntityId;
+
+#[pymethods]
+impl LegalEntityId {
+    #[staticmethod]
+    #[pyo3(signature = (country=None))]
+    fn generate(py: Python<'_>, country: Option<String>) -> PyObject {
+        let mut rng = thread_rng();
+        let opts = idsmith::lei::GenOptions { country };
+        let r = idsmith::lei_codes().generate(&opts, &mut rng);
+        lei_result_to_dict(py, &r)
+    }
+
+    #[staticmethod]
+    fn validate(code: &str) -> bool {
+        idsmith::lei_codes().validate(code)
+    }
+}
+
+// ── VatId ──
+
+#[pyclass]
+struct VatId;
+
+#[pymethods]
+impl VatId {
+    #[staticmethod]
+    #[pyo3(signature = (country=None))]
+    fn generate(py: Python<'_>, country: Option<String>) -> PyResult<PyObject> {
+        let mut rng = thread_rng();
+        let opts = idsmith::vat::GenOptions { country };
+        idsmith::vat_ids()
+            .generate(&opts, &mut rng)
+            .map(|r| vat_result_to_dict(py, &r))
+            .ok_or_else(|| pyo3::exceptions::PyValueError::new_err("Failed to generate VAT number"))
+    }
+
+    #[staticmethod]
+    fn validate(code: &str) -> bool {
+        idsmith::vat_ids().validate(code)
+    }
+
+    #[staticmethod]
+    fn list_countries(py: Python<'_>) -> PyResult<PyObject> {
+        let countries: Vec<PyObject> = idsmith::vat_ids()
+            .list_countries()
+            .iter()
+            .map(|(code, country_name)| {
+                let dict = PyDict::new(py);
+                dict.set_item("code", code).unwrap();
+                dict.set_item("country_name", country_name).unwrap();
+                dict.into()
+            })
+            .collect();
+        Ok(countries.into_pyobject(py)?.into())
+    }
+}
+
 // ── IBAN functions ──
 
 #[pyfunction]
@@ -486,6 +565,8 @@ fn _idsmith(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<DriverLicense>()?;
     m.add_class::<TaxId>()?;
     m.add_class::<Passport>()?;
+    m.add_class::<LegalEntityId>()?;
+    m.add_class::<VatId>()?;
     m.add_function(wrap_pyfunction!(generate_iban, m)?)?;
     m.add_function(wrap_pyfunction!(validate_iban, m)?)?;
     m.add_function(wrap_pyfunction!(format_iban, m)?)?;

@@ -57,12 +57,20 @@ pub mod sg;
 pub mod th;
 pub mod tw;
 
+// Central Asia
+pub mod kz;
+
+// Eastern Europe
+pub mod ua;
+
 // Africa/Middle East
 pub mod dz;
 pub mod eg;
 pub mod il;
+pub mod lu;
 pub mod mu;
 pub mod pk;
+pub mod sa;
 pub mod za;
 
 use date::Gender;
@@ -712,6 +720,37 @@ impl Registry {
                 generate: pk::generate,
                 validate: pk::validate,
                 parse: pk::parse,
+            },
+            RegistryEntry {
+                code: "SA",
+                name: "Iqama",
+                generate: sa::generate,
+                validate: sa::validate,
+                parse: sa::parse,
+            },
+            // ── Central Asia ──
+            RegistryEntry {
+                code: "KZ",
+                name: "IIN",
+                generate: kz::generate,
+                validate: kz::validate,
+                parse: kz::parse,
+            },
+            // ── Eastern Europe ──
+            RegistryEntry {
+                code: "UA",
+                name: "RNTRKP",
+                generate: ua::generate,
+                validate: ua::validate,
+                parse: ua::parse,
+            },
+            // ── Western Europe ──
+            RegistryEntry {
+                code: "LU",
+                name: "Matricule",
+                generate: lu::generate,
+                validate: lu::validate,
+                parse: lu::parse,
             },
         ];
         Registry { entries }

@@ -591,6 +591,110 @@ impl Passport {
     }
 }
 
+// ── LegalEntityId ──
+
+#[napi(object)]
+pub struct LeiResult {
+    pub code: String,
+    pub lou: String,
+    pub country_code: String,
+    pub valid: bool,
+}
+
+impl From<idsmith::lei::LeiResult> for LeiResult {
+    fn from(r: idsmith::lei::LeiResult) -> Self {
+        Self {
+            code: r.code,
+            lou: r.lou,
+            country_code: r.country_code,
+            valid: r.valid,
+        }
+    }
+}
+
+#[napi]
+pub struct LegalEntityId;
+
+#[napi]
+impl LegalEntityId {
+    #[napi(factory)]
+    pub fn create() -> Self {
+        Self
+    }
+
+    #[napi]
+    pub fn generate(country: Option<String>) -> LeiResult {
+        let mut rng = thread_rng();
+        let opts = idsmith::lei::GenOptions { country };
+        idsmith::lei_codes().generate(&opts, &mut rng).into()
+    }
+
+    #[napi]
+    pub fn validate(code: String) -> bool {
+        idsmith::lei_codes().validate(&code)
+    }
+}
+
+// ── VatId ──
+
+#[napi(object)]
+pub struct VatResult {
+    pub code: String,
+    pub country_code: String,
+    pub country_name: String,
+    pub valid: bool,
+}
+
+impl From<idsmith::vat::VatResult> for VatResult {
+    fn from(r: idsmith::vat::VatResult) -> Self {
+        Self {
+            code: r.code,
+            country_code: r.country_code,
+            country_name: r.country_name,
+            valid: r.valid,
+        }
+    }
+}
+
+#[napi]
+pub struct VatId;
+
+#[napi]
+impl VatId {
+    #[napi(factory)]
+    pub fn create() -> Self {
+        Self
+    }
+
+    #[napi]
+    pub fn generate(country: Option<String>) -> Result<VatResult> {
+        let mut rng = thread_rng();
+        let opts = idsmith::vat::GenOptions { country };
+        idsmith::vat_ids()
+            .generate(&opts, &mut rng)
+            .map(VatResult::from)
+            .ok_or_else(|| Error::new(Status::GenericFailure, "Failed to generate VAT number"))
+    }
+
+    #[napi]
+    pub fn validate(code: String) -> bool {
+        idsmith::vat_ids().validate(&code)
+    }
+
+    #[napi]
+    pub fn list_countries() -> Vec<CountryInfo> {
+        idsmith::vat_ids()
+            .list_countries()
+            .iter()
+            .map(|(code, country_name)| CountryInfo {
+                code: code.to_string(),
+                country_name: country_name.to_string(),
+                id_name: "VAT Number".to_string(),
+            })
+            .collect()
+    }
+}
+
 // ── IBAN functions ──
 
 #[napi]

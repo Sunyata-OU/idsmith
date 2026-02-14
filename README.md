@@ -9,7 +9,7 @@
 [![CI](https://github.com/Sunyata-OU/idsmith/actions/workflows/ci.yml/badge.svg)](https://github.com/Sunyata-OU/idsmith/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Validate and generate checksum-correct **IBANs**, **personal IDs**, **bank accounts**, **credit cards**, **SWIFT/BIC**, **company IDs**, **driver's licenses**, **tax IDs**, and **passports**.
+Validate and generate checksum-correct **IBANs**, **personal IDs**, **bank accounts**, **credit cards**, **SWIFT/BIC**, **company IDs**, **driver's licenses**, **tax IDs**, **passports**, **LEI codes**, and **EU VAT numbers**.
 
 Available as a **Rust crate**, **Python package**, and **Node.js module** — all powered by the same Rust core.
 
@@ -48,13 +48,15 @@ Use `default-features = false` when using as a library to keep dependencies mini
 
 ```rust
 // Rust
-use idsmith::{credit_cards, personal_ids, tax_ids, passports, driver_licenses};
+use idsmith::{credit_cards, personal_ids, tax_ids, passports, driver_licenses, vat_ids, lei_codes};
 
 let valid = credit_cards().validate("4152839405126374");
 let ssn_ok = personal_ids().validate("US", "446-72-2445").unwrap_or(false);
 let pan_ok = tax_ids().validate("IN", "ABCDE1234F");
 let passport_ok = passports().validate("US", "123456789");
 let dl_ok = driver_licenses().validate("US", "A123456789012");
+let vat_ok = vat_ids().validate("DE123456789");
+let lei_ok = lei_codes().validate("529900BOTDR0SE98AR17");
 ```
 
 ```python
@@ -66,18 +68,22 @@ idsmith.PersonalId.validate("US", "446-72-2445")      # True
 idsmith.TaxId.validate("IN", "ABCDE1234F")            # True
 idsmith.Passport.generate(country="DE")
 idsmith.DriverLicense.validate("US", "A123456789012")  # True
+idsmith.VatId.validate("DE123456789")                  # True
+idsmith.LegalEntityId.validate("529900BOTDR0SE98AR17") # True
 iban = idsmith.generate_iban("DE")
 ```
 
 ```javascript
 // Node.js
-const { CreditCard, PersonalId, TaxId, Passport, DriverLicense, generateIban } = require('idsmith');
+const { CreditCard, PersonalId, TaxId, Passport, DriverLicense, VatId, LegalEntityId, generateIban } = require('idsmith');
 
 CreditCard.validate('4152839405126374');      // true
 PersonalId.validate('US', '446-72-2445');     // true
 TaxId.validate('IN', 'ABCDE1234F');           // true
 const passport = Passport.generate('DE');
 DriverLicense.validate('US', 'A123456789012'); // true
+VatId.validate('DE123456789');                // true
+LegalEntityId.validate('529900BOTDR0SE98AR17'); // true
 const iban = generateIban('DE');
 ```
 
@@ -92,6 +98,8 @@ const iban = generateIban('DE');
 - **79 driver's license formats** — with country-specific checksum and format validation
 - **80 tax ID formats** — with checksum validation (PAN, TIN, CPF, SIN, Steuer-IdNr, USCI, Partita IVA, NIF, BSN, RFC, and more)
 - **79 passport formats** — with country-specific format validation
+- **LEI codes** — ISO 17442 Legal Entity Identifiers with mod-97 checksum
+- **28 EU VAT number formats** — all EU member states + GB with country-specific checksums (cross-validated against python-stdnum)
 - **CLI tool** with JSON and CSV export
 
 ## Performance

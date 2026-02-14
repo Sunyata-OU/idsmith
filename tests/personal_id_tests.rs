@@ -12,8 +12,11 @@ const ALL_SPECIFIC_COUNTRIES: &[&str] = &[
     "US", "CA", "BR", "AR", "CL", "CO", "CU", "DO", "UY", "EC", "PE", "MX",
     // Asia-Pacific (12)
     "CN", "IN", "JP", "KR", "TW", "TH", "SG", "MY", "ID", "HK", "AU", "NZ",
-    // Africa/Middle East (5)
-    "ZA", "IL", "EG", "DZ", "MU", "PK",
+    // Africa/Middle East (7)
+    "ZA", "IL", "EG", "DZ", "MU", "PK", "SA", // Central Asia (1)
+    "KZ", // Eastern Europe (1)
+    "UA", // Western Europe (1)
+    "LU",
 ];
 
 #[test]
@@ -101,7 +104,8 @@ fn test_gender_filter() {
     let gendered_countries = &[
         "EE", "FI", "SE", "NO", "PL", "RO", "BG", "CZ", "SK", "BE", "FR", "IT",
         // New countries with gender
-        "AR", "MX", "CN", "KR", "TW", "ZA", "EG", "MY", "ID",
+        "AR", "MX", "CN", "KR", "TW", "ZA", "EG", "MY", "ID", // Newly added
+        "KZ", "UA",
     ];
 
     for &cc in gendered_countries {
@@ -142,7 +146,8 @@ fn test_year_filter() {
     // Countries that encode birth year in their ID
     let year_countries = &[
         "EE", "FI", "SE", "NO", "PL", "RO", "BG", "DK", // New countries with DOB
-        "CN", "KR", "ZA", "EG", "MX", "MY", "ID",
+        "CN", "KR", "ZA", "EG", "MX", "MY", "ID", // Newly added
+        "KZ", "UA", "LU",
     ];
 
     for &cc in year_countries {
@@ -205,7 +210,9 @@ fn test_checksum_corruption() {
     let opts = GenOptions::default();
 
     // Countries with strong checksums - generate and corrupt
-    let checksum_countries = &["BR", "CN", "IN", "ZA", "IL", "CA", "JP", "TH", "AU"];
+    let checksum_countries = &[
+        "BR", "CN", "IN", "ZA", "IL", "CA", "JP", "TH", "AU", "KZ", "UA", "SA", "LU",
+    ];
     for &cc in checksum_countries {
         for _ in 0..10 {
             let code = registry.generate(cc, &opts, &mut rng).unwrap();

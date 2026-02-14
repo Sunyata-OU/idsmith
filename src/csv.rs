@@ -11,10 +11,12 @@ use crate::bank_account::AccountResult;
 use crate::company_id::CompanyResult;
 use crate::credit_card::CardResult;
 use crate::driver_license::DriverLicenseResult;
+use crate::lei::LeiResult;
 use crate::passport::PassportResult;
 use crate::personal_id::IdResult;
 use crate::swift::SwiftResult;
 use crate::tax_id::TaxIdResult;
+use crate::vat::VatResult;
 
 /// Wrap a CSV field in double quotes if it contains commas, double-quotes, or
 /// newlines, per RFC 4180. Internal double-quotes are escaped by doubling.
@@ -190,6 +192,34 @@ pub fn tax_row(result: &TaxIdResult) -> String {
         csv_field(&result.name),
         csv_field(&result.code),
         csv_field(result.holder_type.as_deref().unwrap_or("")),
+        result.valid
+    )
+}
+
+/// CSV header for LEI rows.
+pub const LEI_HEADER: &str = "lei,lou,country,valid";
+
+/// Format a single LEI result as a CSV row.
+pub fn lei_row(result: &LeiResult) -> String {
+    format!(
+        "{},{},{},{}",
+        csv_field(&result.code),
+        csv_field(&result.lou),
+        csv_field(&result.country_code),
+        result.valid
+    )
+}
+
+/// CSV header for VAT rows.
+pub const VAT_HEADER: &str = "vat,country_code,country_name,valid";
+
+/// Format a single VAT result as a CSV row.
+pub fn vat_row(result: &VatResult) -> String {
+    format!(
+        "{},{},{},{}",
+        csv_field(&result.code),
+        csv_field(&result.country_code),
+        csv_field(&result.country_name),
         result.valid
     )
 }

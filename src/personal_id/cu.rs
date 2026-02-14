@@ -107,7 +107,11 @@ pub fn parse(code: &str) -> IdResult {
         let year = year_from_century_digit(yy, century);
         let dob = format!("{:04}-{:02}-{:02}", year, month, day);
         let gender_digit = clean.as_bytes()[9] - b'0';
-        let gender = if gender_digit.is_multiple_of(2) { "M" } else { "F" };
+        let gender = if gender_digit.is_multiple_of(2) {
+            "M"
+        } else {
+            "F"
+        };
         (Some(dob), Some(gender.to_string()))
     } else {
         (None, None)

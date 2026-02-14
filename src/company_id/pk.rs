@@ -6,7 +6,7 @@ pub fn generate(rng: &mut rand::rngs::ThreadRng) -> String {
     for _ in 0..11 {
         s.push((b'0' + rng.gen_range(0..=9u8)) as char);
     }
-    let last = rng.gen_range(0..10) ;
+    let last = rng.gen_range(0..10);
     s.push((b'0' + last as u8) as char);
     s
 }

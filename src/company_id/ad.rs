@@ -14,9 +14,7 @@ pub fn generate(rng: &mut rand::rngs::ThreadRng) -> String {
 }
 
 pub fn validate(code: &str) -> bool {
-    let clean = code
-        .to_uppercase()
-        .replace([' ', '-', '.'], "");
+    let clean = code.to_uppercase().replace([' ', '-', '.'], "");
     if clean.len() != 8 {
         return false;
     }

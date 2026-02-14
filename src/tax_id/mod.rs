@@ -99,6 +99,7 @@ static SPECIFIC_COUNTRIES: &[(&str, &str)] = &[
     ("PT", "NIF"),
     ("QA", "QID"),
     ("RO", "CNP"),
+    ("RU", "INN"),
     ("RS", "JMBG"),
     ("SA", "National ID"),
     ("SE", "Personnummer"),
@@ -208,6 +209,7 @@ impl Registry {
             "QA" => Some(("QID", self.generate_qa(rng), None)),
             "RO" => Some(("CNP", self.generate_ro(rng), None)),
             "RS" => Some(("JMBG", self.generate_rs(rng), None)),
+            "RU" => Some(("INN", self.generate_ru(opts, rng), None)),
             "SA" => Some(("National ID", self.generate_sa(rng), None)),
             "SE" => Some(("Personnummer", self.generate_se(rng), None)),
             "SG" => Some(("Tax Ref", self.generate_sg(rng), None)),
@@ -305,6 +307,7 @@ impl Registry {
             "QA" => self.validate_qa(code),
             "RO" => self.validate_ro(code),
             "RS" => self.validate_rs(code),
+            "RU" => self.validate_ru(code),
             "SA" => self.validate_sa(code),
             "SE" => self.validate_se(code),
             "SG" => self.validate_sg(code),
@@ -2194,8 +2197,7 @@ impl Registry {
         }
         let chars: Vec<char> = clean.chars().collect();
         let alpha_count = chars.iter().take_while(|c| c.is_ascii_uppercase()).count();
-        (1..=2).contains(&alpha_count)
-            && chars[alpha_count..].iter().all(|c| c.is_ascii_digit())
+        (1..=2).contains(&alpha_count) && chars[alpha_count..].iter().all(|c| c.is_ascii_digit())
     }
 
     // ── MT TIN ──
@@ -2689,6 +2691,90 @@ impl Registry {
         let r = 11 - (sum % 11);
         let expected = if r > 9 { 0u8 } else { r as u8 };
         d[12] == expected
+    }
+
+    // ── RU INN (Taxpayer ID) ──
+    // 10-digit (entity) or 12-digit (individual), mod-11 weighted checksum
+    fn generate_ru(&self, opts: &GenOptions, rng: &mut impl Rng) -> String {
+        let ht = opts.holder_type.as_deref().unwrap_or(if rng.gen_bool(0.5) {
+            "entity"
+        } else {
+            "individual"
+        });
+        if ht == "entity" || ht == "10" {
+            // 10-digit INN
+            let mut digits: Vec<u8> = (0..9).map(|_| rng.gen_range(0..=9u8)).collect();
+            // Ensure first digit is not 0 for region code
+            digits[0] = rng.gen_range(1..=9u8);
+            let weights = [2u32, 4, 10, 3, 5, 9, 4, 6, 8];
+            let sum: u32 = digits
+                .iter()
+                .zip(weights.iter())
+                .map(|(&d, &w)| d as u32 * w)
+                .sum();
+            let check = ((sum % 11) % 10) as u8;
+            digits.push(check);
+            digits.iter().map(|d| (b'0' + d) as char).collect()
+        } else {
+            // 12-digit INN
+            let mut digits: Vec<u8> = (0..10).map(|_| rng.gen_range(0..=9u8)).collect();
+            digits[0] = rng.gen_range(1..=9u8);
+            let w11 = [7u32, 2, 4, 10, 3, 5, 9, 4, 6, 8];
+            let sum11: u32 = digits
+                .iter()
+                .zip(w11.iter())
+                .map(|(&d, &w)| d as u32 * w)
+                .sum();
+            let d11 = ((sum11 % 11) % 10) as u8;
+            digits.push(d11);
+            let w12 = [3u32, 7, 2, 4, 10, 3, 5, 9, 4, 6, 8];
+            let sum12: u32 = digits
+                .iter()
+                .zip(w12.iter())
+                .map(|(&d, &w)| d as u32 * w)
+                .sum();
+            let d12 = ((sum12 % 11) % 10) as u8;
+            digits.push(d12);
+            digits.iter().map(|d| (b'0' + d) as char).collect()
+        }
+    }
+    fn validate_ru(&self, code: &str) -> bool {
+        let c: String = code.chars().filter(|c| c.is_ascii_digit()).collect();
+        match c.len() {
+            10 => {
+                let digits: Vec<u8> = c.bytes().map(|b| b - b'0').collect();
+                let weights = [2u32, 4, 10, 3, 5, 9, 4, 6, 8];
+                let sum: u32 = digits[..9]
+                    .iter()
+                    .zip(weights.iter())
+                    .map(|(&d, &w)| d as u32 * w)
+                    .sum();
+                let check = ((sum % 11) % 10) as u8;
+                digits[9] == check
+            }
+            12 => {
+                let digits: Vec<u8> = c.bytes().map(|b| b - b'0').collect();
+                let w11 = [7u32, 2, 4, 10, 3, 5, 9, 4, 6, 8];
+                let sum11: u32 = digits[..10]
+                    .iter()
+                    .zip(w11.iter())
+                    .map(|(&d, &w)| d as u32 * w)
+                    .sum();
+                let d11 = ((sum11 % 11) % 10) as u8;
+                if digits[10] != d11 {
+                    return false;
+                }
+                let w12 = [3u32, 7, 2, 4, 10, 3, 5, 9, 4, 6, 8];
+                let sum12: u32 = digits[..11]
+                    .iter()
+                    .zip(w12.iter())
+                    .map(|(&d, &w)| d as u32 * w)
+                    .sum();
+                let d12 = ((sum12 % 11) % 10) as u8;
+                digits[11] == d12
+            }
+            _ => false,
+        }
     }
 
     // ── SA National ID ──
