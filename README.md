@@ -18,8 +18,14 @@ Available as a **Rust crate**, **Python package**, and **Node.js module** — al
 ## Install
 
 ```bash
-# Rust
-cargo add idsmith
+# Rust (library only, no CLI deps)
+cargo add idsmith --no-default-features
+
+# Rust (with JSON serialization)
+cargo add idsmith --no-default-features --features json
+
+# Rust (CLI)
+cargo install idsmith
 
 # Python
 pip install idsmith
@@ -27,6 +33,16 @@ pip install idsmith
 # Node.js
 npm install idsmith
 ```
+
+### Cargo Features
+
+| Feature | Description | Default |
+|---------|-------------|---------|
+| `cli` | Full CLI binary (clap, csv, json) | Yes |
+| `json` | `serde::Serialize` on all result types | No |
+| `csv` | CSV output formatting | No |
+
+Use `default-features = false` when using as a library to keep dependencies minimal.
 
 ## Quick Example
 

@@ -17,6 +17,22 @@ cargo install idsmith
 
 > **Note:** Use `default-features = false` when using as a library to exclude CLI dependencies (clap, etc.).
 
+### Cargo Features
+
+| Feature | Description | Default |
+|---------|-------------|---------|
+| `cli` | Full CLI binary (clap, csv, json) | Yes |
+| `json` | `serde::Serialize` on all result types | No |
+| `csv` | CSV output formatting | No |
+
+```toml
+# Library only — minimal dependencies
+idsmith = { version = "0.4.0", default-features = false }
+
+# Library with JSON serialization
+idsmith = { version = "0.4.0", default-features = false, features = ["json"] }
+```
+
 ## Python
 
 Requires Python 3.8+.
