@@ -20,6 +20,9 @@ let swift_ok = swift_codes().validate("PBIHNLY9XXX");
 // Country-specific validation (returns Option<bool>)
 let ssn_ok = personal_ids().validate("US", "446-72-2445").unwrap_or(false);
 let vat_ok = company_ids().validate("DE", "DE141158922");
+let dl_ok = idsmith::driver_licenses().validate("US", "A123456789012");
+let passport_ok = idsmith::passports().validate("DE", "C01234567");
+let tin_ok = idsmith::tax_ids().validate("IN", "ABCDE1234F");
 let acc_ok = bank_accounts().validate("MX", "167078019952865929").unwrap_or(false);
 
 // IBAN validation
@@ -50,6 +53,12 @@ println!("{}", id);
 // Generate a German IBAN
 let iban = idsmith::iban::generate_iban(Some("DE"), &mut rng).unwrap();
 println!("{}", idsmith::iban::format_iban(&iban));
+
+// Generate a Passport
+let passport = idsmith::passports().generate(&Default::default(), &mut rng).unwrap();
+
+// Generate a Tax ID (TIN)
+let tin = idsmith::tax_ids().generate(&Default::default(), &mut rng).unwrap();
 ```
 
 ## Parsing

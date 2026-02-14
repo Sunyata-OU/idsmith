@@ -26,6 +26,15 @@ idsmith.BankAccount.validate("US", "021000021-123456789")  # True
 # Company ID
 idsmith.CompanyId.validate("GB", "GB123456789")  # True
 
+# Driver's License
+idsmith.DriverLicense.validate("US", "A123456789012")  # True
+
+# Passport
+idsmith.Passport.validate("DE", "C01234567")  # True
+
+# Tax ID (TIN)
+idsmith.TaxId.validate("IN", "ABCDE1234F")  # True
+
 # SWIFT/BIC
 idsmith.Swift.validate("CHASGB2LXXX")  # True
 ```
@@ -60,6 +69,15 @@ print(company["code"])  # GB123456789
 # Generate a SWIFT code
 swift = idsmith.Swift.generate(country="US")
 print(swift["code"])  # CHASUSU5XXX
+
+# Generate a Driver's License
+dl = idsmith.DriverLicense.generate(country="US")
+
+# Generate a Passport
+passport = idsmith.Passport.generate(country="DE")
+
+# Generate a Tax ID (TIN)
+tin = idsmith.TaxId.generate(country="IN")
 ```
 
 ## Parsing

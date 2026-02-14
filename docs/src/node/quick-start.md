@@ -9,7 +9,10 @@ npm install idsmith
 ## Validation
 
 ```javascript
-const { BankAccount, PersonalId, CreditCard, CompanyId, Swift, validateIban } = require('idsmith');
+const {
+  BankAccount, PersonalId, CreditCard, CompanyId,
+  Swift, DriverLicense, Passport, TaxId, validateIban
+} = require('idsmith');
 
 // IBAN
 validateIban('DE47508562162522867909');  // true
@@ -26,6 +29,15 @@ BankAccount.validate('US', '021000021-123456789');  // true
 // Company ID
 CompanyId.validate('GB', 'GB123456789');  // true
 
+// Driver's License
+DriverLicense.validate('US', 'A123456789012');  // true
+
+// Passport
+Passport.validate('DE', 'C01234567');  // true
+
+// Tax ID (TIN)
+TaxId.validate('IN', 'ABCDE1234F');  // true
+
 // SWIFT/BIC
 Swift.validate('CHASGB2LXXX');  // true
 ```
@@ -35,6 +47,7 @@ Swift.validate('CHASGB2LXXX');  // true
 ```javascript
 const {
   BankAccount, PersonalId, CreditCard, CompanyId, Swift,
+  DriverLicense, Passport, TaxId,
   generateIban, formatIban
 } = require('idsmith');
 
@@ -63,6 +76,15 @@ console.log(company.code);  // GB123456789
 // Generate a SWIFT code
 const swift = Swift.generate('US');
 console.log(swift.code);  // CHASUSU5XXX
+
+// Generate a Driver's License
+const dl = DriverLicense.generate('US');
+
+// Generate a Passport
+const passport = Passport.generate('DE');
+
+// Generate a Tax ID (TIN)
+const tin = TaxId.generate('IN');
 ```
 
 ## TypeScript

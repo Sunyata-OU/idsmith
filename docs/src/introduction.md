@@ -31,9 +31,17 @@ The Python and Node.js packages are native bindings to the Rust core — same sp
 
 | Library | Language | Throughput | Relative Speed |
 | :--- | :--- | :--- | :--- |
-| **idsmith** | **Rust** | **~1,280,000 ops/s** | **1.0x** |
-| `ibantools` | Node.js | ~460,000 ops/s | ~2.7x slower |
-| `python-stdnum`| Python | ~54,000 ops/s | ~23x slower |
+| **idsmith** | **Rust** | **~1,310,000 ops/s** | **1.0x** |
+| `ibantools` | Node.js | ~460,000 ops/s | ~2.8x slower |
+| `python-stdnum`| Python | ~54,000 ops/s | ~24x slower |
+
+| Document Type (idsmith Rust) | Throughput |
+| :--- | :--- |
+| Personal ID (US SSN) | ~9,300,000 ops/s |
+| Credit Card (Visa) | ~14,900,000 ops/s |
+| Driver License (US) | ~10,100,000 ops/s |
+| Passport (DE) | ~19,100,000 ops/s |
+| Tax ID (India PAN) | ~7,800,000 ops/s |
 
 ## Validation Standards
 

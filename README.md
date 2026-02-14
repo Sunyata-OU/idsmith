@@ -100,17 +100,19 @@ IBAN validation throughput (100k iterations, single-threaded):
 
 | Library | Language | Throughput | vs idsmith |
 |---------|----------|-----------|------------|
-| **idsmith** | **Rust** | **~1,280,000 ops/s** | **—** |
-| `ibantools` | Node.js | ~460,000 ops/s | ~2.7x slower |
-| `python-stdnum` | Python | ~54,000 ops/s | ~23x slower |
+| **idsmith** | **Rust** | **~1,310,000 ops/s** | **—** |
+| `ibantools` | Node.js | ~460,000 ops/s | ~2.8x slower |
+| `python-stdnum` | Python | ~54,000 ops/s | ~24x slower |
 
 Extended document validation (idsmith Rust):
 
 | Document Type | Throughput | vs Node.js alternatives |
 |---------------|------------|-------------------------|
-| Personal ID (US SSN) | ~4,900,000 ops/s | ~30x faster |
-| Credit Card (Visa) | ~7,500,000 ops/s | ~53x faster |
-| Tax ID (India PAN) | ~11,400,000 ops/s | — |
+| Personal ID (US SSN) | ~9,300,000 ops/s | ~30x faster |
+| Credit Card (Visa) | ~14,900,000 ops/s | ~53x faster |
+| Driver License (US) | ~10,100,000 ops/s | — |
+| Passport (DE) | ~19,100,000 ops/s | — |
+| Tax ID (India PAN) | ~7,800,000 ops/s | — |
 
 Python and Node.js bindings call the same Rust core — same speed, same correctness.
 
