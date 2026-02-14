@@ -62,6 +62,10 @@ const iban = generateIban('DE');
 - **252 company ID formats** — VAT numbers, EINs, CIFs with checksums
 - **CLI tool** with JSON and CSV export
 
+## Projects Using idsmith
+
+- [MockBanker](https://tonybenoy.github.io/mockbanker/) — Web app implementing nearly all idsmith features, generate realistic mock banking and identity data in the browser
+
 ## Documentation
 
 - [Full Documentation](https://sunyata-ou.github.io/idsmith/)
