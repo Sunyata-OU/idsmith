@@ -286,7 +286,9 @@ pub fn generate(_opts: &GenOptions, rng: &mut impl Rng) -> AccountResult {
 
     AccountResult {
         country_code: "NZ".into(),
-        country_name: crate::countries::get_country_name("NZ").unwrap_or("Unknown").to_string(),
+        country_name: crate::countries::get_country_name("NZ")
+            .unwrap_or("Unknown")
+            .to_string(),
         format_name: "Bank + Branch + Account + Suffix".into(),
         bank_code: Some(bank_str.to_string()),
         branch_code: Some(branch_str.to_string()),

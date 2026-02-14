@@ -34,7 +34,7 @@ pub fn generate(opts: &super::GenOptions, rng: &mut rand::rngs::ThreadRng) -> St
     // Digits 7 (century) already chosen, digits 8-9 are serial, digit 10 encodes gender
     let serial: u8 = rng.gen_range(0..=99);
     let gender_digit: u8 = match opts.gender {
-        Some(Gender::Male) => rng.gen_range(0..=4) * 2,     // even → male
+        Some(Gender::Male) => rng.gen_range(0..=4) * 2, // even → male
         Some(Gender::Female) => rng.gen_range(0..=4) * 2 + 1, // odd → female
         None => rng.gen_range(0..=9),
     };
@@ -67,7 +67,7 @@ pub fn validate(code: &str) -> bool {
     };
     let century = bytes[6] - b'0';
 
-    if month < 1 || month > 12 || day < 1 || day > 31 {
+    if !(1..=12).contains(&month) || !(1..=31).contains(&day) {
         return false;
     }
 
@@ -80,7 +80,7 @@ pub fn validate(code: &str) -> bool {
     let year = year_from_century_digit(yy, century);
     let max_day = match month {
         2 => {
-            if (year % 4 == 0 && year % 100 != 0) || year % 400 == 0 {
+            if (year.is_multiple_of(4) && !year.is_multiple_of(100)) || year.is_multiple_of(400) {
                 29
             } else {
                 28
@@ -107,7 +107,7 @@ pub fn parse(code: &str) -> IdResult {
         let year = year_from_century_digit(yy, century);
         let dob = format!("{:04}-{:02}-{:02}", year, month, day);
         let gender_digit = clean.as_bytes()[9] - b'0';
-        let gender = if gender_digit % 2 == 0 { "M" } else { "F" };
+        let gender = if gender_digit.is_multiple_of(2) { "M" } else { "F" };
         (Some(dob), Some(gender.to_string()))
     } else {
         (None, None)

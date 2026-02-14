@@ -24,7 +24,9 @@ pub fn generate(_opts: &GenOptions, rng: &mut impl Rng) -> AccountResult {
 
     AccountResult {
         country_code: "GB".into(),
-        country_name: crate::countries::get_country_name("GB").unwrap_or("Unknown").to_string(),
+        country_name: crate::countries::get_country_name("GB")
+            .unwrap_or("Unknown")
+            .to_string(),
         format_name: "Sort Code + Account".into(),
         bank_code: Some(sort_code),
         branch_code: None,

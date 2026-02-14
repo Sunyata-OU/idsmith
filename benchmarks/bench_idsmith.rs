@@ -1,22 +1,27 @@
-use idsmith::{iban, credit_cards, personal_ids, tax_ids, passports, driver_licenses};
+use idsmith::{credit_cards, driver_licenses, iban, passports, personal_ids, tax_ids};
 use std::time::Instant;
 
-fn bench<F>(name: &str, iterations: u32, f: F) 
-where F: Fn() 
+fn bench<F>(name: &str, iterations: u32, f: F)
+where
+    F: Fn(),
 {
     let start = Instant::now();
     for _ in 0..iterations {
         f();
     }
     let duration = start.elapsed();
-    println!("{}: {:.2} ops/sec", name, iterations as f64 / duration.as_secs_f64());
+    println!(
+        "{}: {:.2} ops/sec",
+        name,
+        iterations as f64 / duration.as_secs_f64()
+    );
 }
 
 fn main() {
     let iterations = 100_000;
 
     println!("idsmith (rust) benchmarks:");
-    
+
     bench("IBAN (DE)", iterations, || {
         iban::validate_iban("DE47508562162522867909");
     });

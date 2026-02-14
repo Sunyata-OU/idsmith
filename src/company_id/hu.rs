@@ -9,7 +9,7 @@ pub fn generate(rng: &mut rand::rngs::ThreadRng) -> String {
             .zip(weights.iter())
             .map(|(&d, &w)| d as u32 * w as u32)
             .sum();
-        if sum % 10 == 0 {
+        if sum.is_multiple_of(10) {
             let s: String = digits.iter().map(|d| (b'0' + d) as char).collect();
             return format!("HU{}", s);
         }
@@ -32,5 +32,5 @@ pub fn validate(code: &str) -> bool {
         .zip(weights.iter())
         .map(|(&d, &w)| d as u32 * w as u32)
         .sum();
-    sum % 10 == 0
+    sum.is_multiple_of(10)
 }

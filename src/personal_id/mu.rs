@@ -72,7 +72,7 @@ pub fn validate(code: &str) -> bool {
     // Validate date
     let day = clean[1..3].parse::<u8>().unwrap_or(0);
     let month = clean[3..5].parse::<u8>().unwrap_or(0);
-    if day < 1 || day > 31 || month < 1 || month > 12 {
+    if !(1..=31).contains(&day) || !(1..=12).contains(&month) {
         return false;
     }
 

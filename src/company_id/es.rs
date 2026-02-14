@@ -21,10 +21,7 @@ pub fn generate(rng: &mut rand::rngs::ThreadRng) -> String {
 }
 
 pub fn validate(code: &str) -> bool {
-    let clean: String = code
-        .chars()
-        .filter(|c| c.is_ascii_alphanumeric())
-        .collect();
+    let clean: String = code.chars().filter(|c| c.is_ascii_alphanumeric()).collect();
     if clean.len() != 9 {
         return false;
     }

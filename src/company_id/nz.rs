@@ -13,7 +13,7 @@ pub fn generate(rng: &mut rand::rngs::ThreadRng) -> String {
     let sum: i32 = calc_digits
         .iter()
         .zip(w1.iter())
-        .map(|(&d, &w)| d as i32 * w as i32)
+        .map(|(&d, &w)| d as i32 * w)
         .sum();
     let mut rem = (-sum).rem_euclid(11);
 
@@ -22,7 +22,7 @@ pub fn generate(rng: &mut rand::rngs::ThreadRng) -> String {
         let sum2: i32 = calc_digits
             .iter()
             .zip(w2.iter())
-            .map(|(&d, &w)| d as i32 * w as i32)
+            .map(|(&d, &w)| d as i32 * w)
             .sum();
         rem = (-sum2).rem_euclid(11);
         if rem == 10 {

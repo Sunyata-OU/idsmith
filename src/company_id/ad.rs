@@ -14,17 +14,31 @@ pub fn generate(rng: &mut rand::rngs::ThreadRng) -> String {
 }
 
 pub fn validate(code: &str) -> bool {
-    let clean = code.to_uppercase().replace(' ', "").replace('-', "").replace('.', "");
-    if clean.len() != 8 { return false; }
+    let clean = code
+        .to_uppercase()
+        .replace([' ', '-', '.'], "");
+    if clean.len() != 8 {
+        return false;
+    }
     let first = clean.chars().next().unwrap();
     let last = clean.chars().last().unwrap();
-    if !first.is_ascii_alphabetic() || !last.is_ascii_alphabetic() { return false; }
-    if !clean[1..7].chars().all(|c| c.is_ascii_digit()) { return false; }
-    if !"ACDEFGLOPU".contains(first) { return false; }
-    
+    if !first.is_ascii_alphabetic() || !last.is_ascii_alphabetic() {
+        return false;
+    }
+    if !clean[1..7].chars().all(|c| c.is_ascii_digit()) {
+        return false;
+    }
+    if !"ACDEFGLOPU".contains(first) {
+        return false;
+    }
+
     let mid = &clean[1..7];
-    if first == 'F' && mid > "699999" { return false; }
-    if (first == 'A' || first == 'L') && !(mid > "699999" && mid < "800000") { return false; }
-    
+    if first == 'F' && mid > "699999" {
+        return false;
+    }
+    if (first == 'A' || first == 'L') && !(mid > "699999" && mid < "800000") {
+        return false;
+    }
+
     true
 }

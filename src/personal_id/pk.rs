@@ -19,8 +19,8 @@ pub fn generate(opts: &super::GenOptions, rng: &mut rand::rngs::ThreadRng) -> St
 
     // Gender digit: odd = male, even = female (non-zero)
     let gender_digit: u8 = match opts.gender {
-        Some(Gender::Male) => rng.gen_range(0..=4) * 2 + 1,   // 1,3,5,7,9
-        Some(Gender::Female) => rng.gen_range(1..=4) * 2,       // 2,4,6,8
+        Some(Gender::Male) => rng.gen_range(0..=4) * 2 + 1, // 1,3,5,7,9
+        Some(Gender::Female) => rng.gen_range(1..=4) * 2,   // 2,4,6,8
         None => rng.gen_range(1..=9),
     };
 
@@ -37,7 +37,7 @@ pub fn validate(code: &str) -> bool {
     let last = clean.as_bytes()[12] - b'0';
 
     // Province must be 1-7
-    if first < 1 || first > 7 {
+    if !(1..=7).contains(&first) {
         return false;
     }
 

@@ -12,7 +12,7 @@ pub fn generate(rng: &mut rand::rngs::ThreadRng) -> String {
         }
         let s: String = digits.iter().map(|d| (b'0' + d) as char).collect();
         let num: u64 = s.parse().unwrap();
-        if num % 11 == 0 {
+        if num.is_multiple_of(11) {
             return format!("SK{}", s);
         }
     }
@@ -32,5 +32,5 @@ pub fn validate(code: &str) -> bool {
         return false;
     }
     let num: u64 = clean.parse().unwrap_or(1);
-    num % 11 == 0
+    num.is_multiple_of(11)
 }

@@ -348,7 +348,9 @@ impl Registry {
         if let Some(alias) = resolve_alias(country) {
             let mut result = self.generate_for(alias.parent_code, opts, rng)?;
             result.country_code = country.to_string();
-            result.country_name = crate::countries::get_country_name(country).unwrap_or("Unknown").to_string();
+            result.country_name = crate::countries::get_country_name(country)
+                .unwrap_or("Unknown")
+                .to_string();
             return Some(result);
         }
         None
@@ -395,7 +397,12 @@ impl Registry {
         // Specific entries first
         for e in &self.entries {
             if seen.insert(e.code) {
-                result.push((e.code, crate::countries::get_country_name(e.code).unwrap_or("Unknown"), e.format_name, e.has_iban));
+                result.push((
+                    e.code,
+                    crate::countries::get_country_name(e.code).unwrap_or("Unknown"),
+                    e.format_name,
+                    e.has_iban,
+                ));
             }
         }
 
@@ -418,7 +425,12 @@ impl Registry {
                     } else {
                         ("Bank + Account", false)
                     };
-                result.push((alias.code, crate::countries::get_country_name(alias.code).unwrap_or("Unknown"), format_name, has_iban));
+                result.push((
+                    alias.code,
+                    crate::countries::get_country_name(alias.code).unwrap_or("Unknown"),
+                    format_name,
+                    has_iban,
+                ));
             }
         }
 

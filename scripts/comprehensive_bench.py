@@ -77,5 +77,29 @@ def run_benchmarks():
                lambda v: fr.siren.is_valid(v), 
                test_siren)
 
+    # Tax ID - IN PAN (No stdnum comparison, just idsmith)
+    print("\n--- Benchmarking Tax ID (IN PAN) ---")
+    start = time.time()
+    for _ in range(ITERATIONS):
+        idsmith.TaxId.validate("IN", "ABCDE1234F")
+    end = time.time()
+    print(f"idsmith: {ITERATIONS / (end - start):.2f} ops/sec")
+
+    # Driver License - US
+    print("\n--- Benchmarking Driver License (US) ---")
+    start = time.time()
+    for _ in range(ITERATIONS):
+        idsmith.DriverLicense.validate("US", "A123456789012")
+    end = time.time()
+    print(f"idsmith: {ITERATIONS / (end - start):.2f} ops/sec")
+
+    # Passport - DE
+    print("\n--- Benchmarking Passport (DE) ---")
+    start = time.time()
+    for _ in range(ITERATIONS):
+        idsmith.Passport.validate("DE", "C01234567")
+    end = time.time()
+    print(f"idsmith: {ITERATIONS / (end - start):.2f} ops/sec")
+
 if __name__ == "__main__":
     run_benchmarks()

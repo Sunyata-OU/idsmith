@@ -1,7 +1,7 @@
 use rand::Rng;
 
 pub fn generate(rng: &mut rand::rngs::ThreadRng) -> String {
-    let base: u64 = rng.gen_range(200_000_0..=999_999_9);
+    let base: u64 = rng.gen_range(2_000_000..=9_999_999);
     let first_digit = 0u64;
     let full_base = first_digit * 10_000_000 + base;
     let check = 97 - (full_base % 97);

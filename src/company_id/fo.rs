@@ -1,7 +1,9 @@
 use rand::Rng;
 
 pub fn generate(rng: &mut rand::rngs::ThreadRng) -> String {
-    (0..6).map(|_| (b'0' + rng.gen_range(0..=9u8)) as char).collect()
+    (0..6)
+        .map(|_| (b'0' + rng.gen_range(0..=9u8)) as char)
+        .collect()
 }
 
 pub fn validate(code: &str) -> bool {

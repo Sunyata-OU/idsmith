@@ -783,8 +783,7 @@ impl Registry {
     }
 
     pub fn is_supported(&self, country: &str) -> bool {
-        self.find(country).is_some()
-            || resolve_alias(country).is_some()
+        self.find(country).is_some() || resolve_alias(country).is_some()
     }
 
     pub fn list_countries(&self) -> Vec<(&str, &str, &str)> {
@@ -792,7 +791,11 @@ impl Registry {
         let mut result = Vec::new();
         for e in &self.entries {
             if seen.insert(e.code) {
-                result.push((e.code, crate::countries::get_country_name(e.code).unwrap_or("Unknown"), e.name));
+                result.push((
+                    e.code,
+                    crate::countries::get_country_name(e.code).unwrap_or("Unknown"),
+                    e.name,
+                ));
             }
         }
         for alias in TERRITORY_ALIASES {
@@ -801,7 +804,11 @@ impl Registry {
                     .find(alias.parent_code)
                     .map(|e| e.name)
                     .unwrap_or("National ID");
-                result.push((alias.code, crate::countries::get_country_name(alias.code).unwrap_or("Unknown"), name));
+                result.push((
+                    alias.code,
+                    crate::countries::get_country_name(alias.code).unwrap_or("Unknown"),
+                    name,
+                ));
             }
         }
         result.sort_by_key(|(code, _, _)| *code);

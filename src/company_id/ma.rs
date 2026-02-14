@@ -12,7 +12,9 @@ fn mod97(digits: &str) -> u32 {
 
 pub fn generate(rng: &mut rand::rngs::ThreadRng) -> String {
     loop {
-        let body: String = (0..13).map(|_| (b'0' + rng.gen_range(0..=9u8)) as char).collect();
+        let body: String = (0..13)
+            .map(|_| (b'0' + rng.gen_range(0..=9u8)) as char)
+            .collect();
         let body_val = mod97(&body);
         // We need (body * 100 + check) % 97 == 0
         // check = (97 - (body_val * 100 % 97)) % 97

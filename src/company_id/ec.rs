@@ -8,7 +8,11 @@ fn ci_checksum(digits: &[u8]) -> u32 {
         .map(|(i, &d)| {
             let w = if i % 2 == 0 { 2 } else { 1 };
             let v = d as u32 * w;
-            if v > 9 { v - 9 } else { v }
+            if v > 9 {
+                v - 9
+            } else {
+                v
+            }
         })
         .sum::<u32>()
         % 10

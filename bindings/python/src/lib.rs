@@ -51,7 +51,10 @@ fn company_result_to_dict(py: Python<'_>, r: &idsmith::company_id::CompanyResult
     dict.into()
 }
 
-fn license_result_to_dict(py: Python<'_>, r: &idsmith::driver_license::DriverLicenseResult) -> PyObject {
+fn license_result_to_dict(
+    py: Python<'_>,
+    r: &idsmith::driver_license::DriverLicenseResult,
+) -> PyObject {
     let dict = PyDict::new(py);
     dict.set_item("country_code", &r.country_code).unwrap();
     dict.set_item("country_name", &r.country_name).unwrap();
@@ -323,7 +326,11 @@ struct DriverLicense;
 impl DriverLicense {
     #[staticmethod]
     #[pyo3(signature = (country=None, state=None))]
-    fn generate(py: Python<'_>, country: Option<String>, state: Option<String>) -> PyResult<PyObject> {
+    fn generate(
+        py: Python<'_>,
+        country: Option<String>,
+        state: Option<String>,
+    ) -> PyResult<PyObject> {
         let mut rng = thread_rng();
         let opts = idsmith::driver_license::GenOptions { country, state };
         idsmith::driver_licenses()
@@ -365,9 +372,16 @@ struct TaxId;
 impl TaxId {
     #[staticmethod]
     #[pyo3(signature = (country=None, holder_type=None))]
-    fn generate(py: Python<'_>, country: Option<String>, holder_type: Option<String>) -> PyResult<PyObject> {
+    fn generate(
+        py: Python<'_>,
+        country: Option<String>,
+        holder_type: Option<String>,
+    ) -> PyResult<PyObject> {
         let mut rng = thread_rng();
-        let opts = idsmith::tax_id::GenOptions { country, holder_type };
+        let opts = idsmith::tax_id::GenOptions {
+            country,
+            holder_type,
+        };
         idsmith::tax_ids()
             .generate(&opts, &mut rng)
             .map(|r| tax_result_to_dict(py, &r))

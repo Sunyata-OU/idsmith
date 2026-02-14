@@ -41,7 +41,9 @@ pub fn validate(code: &str) -> bool {
         if digits[0] == 0 {
             return false;
         }
-        let n: u64 = digits[..12].iter().fold(0u64, |acc, &d| acc * 10 + d as u64);
+        let n: u64 = digits[..12]
+            .iter()
+            .fold(0u64, |acc, &d| acc * 10 + d as u64);
         let expected = (n % 11 % 10) as u8;
         expected == digits[12]
     } else if clean.len() == 15 {
@@ -49,7 +51,9 @@ pub fn validate(code: &str) -> bool {
         if !matches!(digits[0], 3 | 4) {
             return false;
         }
-        let n: u128 = digits[..14].iter().fold(0u128, |acc, &d| acc * 10 + d as u128);
+        let n: u128 = digits[..14]
+            .iter()
+            .fold(0u128, |acc, &d| acc * 10 + d as u128);
         let expected = (n % 13 % 10) as u8;
         expected == digits[14]
     } else {

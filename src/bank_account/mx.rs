@@ -53,7 +53,9 @@ pub fn generate(_opts: &GenOptions, rng: &mut impl Rng) -> AccountResult {
 
     AccountResult {
         country_code: "MX".into(),
-        country_name: crate::countries::get_country_name("MX").unwrap_or("Unknown").to_string(),
+        country_name: crate::countries::get_country_name("MX")
+            .unwrap_or("Unknown")
+            .to_string(),
         format_name: "CLABE".into(),
         bank_code: Some(bank_code),
         branch_code: Some(clabe[3..6].to_string()),

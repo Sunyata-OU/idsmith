@@ -11,7 +11,11 @@ pub fn generate(rng: &mut rand::rngs::ThreadRng) -> String {
 
 pub fn validate(code: &str) -> bool {
     let clean = code.to_uppercase().replace(' ', "");
-    if !clean.starts_with("FR") || clean.len() != 13 { return false; }
-    if &clean[4..7] != "000" { return false; }
+    if !clean.starts_with("FR") || clean.len() != 13 {
+        return false;
+    }
+    if &clean[4..7] != "000" {
+        return false;
+    }
     crate::company_id::fr::validate(&clean)
 }

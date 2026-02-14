@@ -1,4 +1,3 @@
-
 use rand::Rng;
 #[cfg(feature = "json")]
 use serde::Serialize;
@@ -210,8 +209,7 @@ impl Registry {
             "DZ" => Some(("Passeport", self.generate_dz(rng))),
             _ => None,
         } {
-            let country_name = crate::countries::get_country_name(&country)
-                .unwrap_or("Unknown");
+            let country_name = crate::countries::get_country_name(&country).unwrap_or("Unknown");
             return Some(PassportResult {
                 country_code: country,
                 country_name: country_name.to_string(),

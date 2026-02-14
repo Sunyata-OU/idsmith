@@ -226,8 +226,7 @@ impl Registry {
             "ZA" => Some(("Tax Number", self.generate_za(rng), None)),
             _ => None,
         } {
-            let country_name = crate::countries::get_country_name(&country)
-                .unwrap_or("Unknown");
+            let country_name = crate::countries::get_country_name(&country).unwrap_or("Unknown");
             return Some(TaxIdResult {
                 country_code: country,
                 country_name: country_name.to_string(),
@@ -401,14 +400,22 @@ impl Registry {
         let luhn_map: [u8; 10] = [0, 2, 4, 6, 8, 1, 3, 5, 7, 9];
         let digits: Vec<u8> = (0..8)
             .map(|i| {
-                if i == 0 { rng.gen_range(1..=9u8) } else { rng.gen_range(0..=9u8) }
+                if i == 0 {
+                    rng.gen_range(1..=9u8)
+                } else {
+                    rng.gen_range(0..=9u8)
+                }
             })
             .collect();
         let s: u32 = digits
             .iter()
             .enumerate()
             .map(|(i, &d)| {
-                if i % 2 != 0 { luhn_map[d as usize] as u32 } else { d as u32 }
+                if i % 2 != 0 {
+                    luhn_map[d as usize] as u32
+                } else {
+                    d as u32
+                }
             })
             .sum();
         let check = ((10 - (s % 10)) % 10) as u8;
@@ -427,7 +434,11 @@ impl Registry {
             .iter()
             .enumerate()
             .map(|(i, &d)| {
-                if i % 2 != 0 { luhn_map[d as usize] as u32 } else { d as u32 }
+                if i % 2 != 0 {
+                    luhn_map[d as usize] as u32
+                } else {
+                    d as u32
+                }
             })
             .sum();
         let check = ((10 - (s % 10)) % 10) as u8;
@@ -753,11 +764,19 @@ impl Registry {
         let mut first9: Vec<u8> = vec![province / 10, province % 10, d3];
         first9.extend_from_slice(&body);
         // CI checksum: weights (2,1,2,1,...), fold x-9 if x>9, sum%10, check=(10-sum)%10
-        let sum: u32 = first9.iter().enumerate().map(|(i, &d)| {
-            let w = if i % 2 == 0 { 2 } else { 1 };
-            let v = d as u32 * w;
-            if v > 9 { v - 9 } else { v }
-        }).sum();
+        let sum: u32 = first9
+            .iter()
+            .enumerate()
+            .map(|(i, &d)| {
+                let w = if i % 2 == 0 { 2 } else { 1 };
+                let v = d as u32 * w;
+                if v > 9 {
+                    v - 9
+                } else {
+                    v
+                }
+            })
+            .sum();
         let check = ((10 - (sum % 10)) % 10) as u8;
         let mut result: String = first9.iter().map(|d| (b'0' + d) as char).collect();
         result.push((b'0' + check) as char);
@@ -777,18 +796,30 @@ impl Registry {
         match digits[2] {
             0..=5 => {
                 // Natural: CI checksum on first 10 digits
-                let sum: u32 = digits[..9].iter().enumerate().map(|(i, &d)| {
-                    let w = if i % 2 == 0 { 2 } else { 1 };
-                    let v = d as u32 * w;
-                    if v > 9 { v - 9 } else { v }
-                }).sum();
+                let sum: u32 = digits[..9]
+                    .iter()
+                    .enumerate()
+                    .map(|(i, &d)| {
+                        let w = if i % 2 == 0 { 2 } else { 1 };
+                        let v = d as u32 * w;
+                        if v > 9 {
+                            v - 9
+                        } else {
+                            v
+                        }
+                    })
+                    .sum();
                 let check = ((10 - (sum % 10)) % 10) as u8;
                 digits[9] == check
             }
             6 => {
                 // Public: weights (3,2,7,6,5,4,3,2) on digits 0-7, check at digit 8
                 let weights: [u32; 8] = [3, 2, 7, 6, 5, 4, 3, 2];
-                let sum: u32 = digits[..8].iter().zip(weights.iter()).map(|(&d, &w)| d as u32 * w).sum();
+                let sum: u32 = digits[..8]
+                    .iter()
+                    .zip(weights.iter())
+                    .map(|(&d, &w)| d as u32 * w)
+                    .sum();
                 let r = sum % 11;
                 let check = if r == 0 { 0u8 } else { (11 - r) as u8 };
                 digits[8] == check
@@ -796,7 +827,11 @@ impl Registry {
             9 => {
                 // Juridical: weights (4,3,2,7,6,5,4,3,2) on digits 0-8, check at digit 9
                 let weights: [u32; 9] = [4, 3, 2, 7, 6, 5, 4, 3, 2];
-                let sum: u32 = digits[..9].iter().zip(weights.iter()).map(|(&d, &w)| d as u32 * w).sum();
+                let sum: u32 = digits[..9]
+                    .iter()
+                    .zip(weights.iter())
+                    .map(|(&d, &w)| d as u32 * w)
+                    .sum();
                 let r = sum % 11;
                 let check = if r == 0 { 0u8 } else { (11 - r) as u8 };
                 digits[9] == check
@@ -2159,8 +2194,7 @@ impl Registry {
         }
         let chars: Vec<char> = clean.chars().collect();
         let alpha_count = chars.iter().take_while(|c| c.is_ascii_uppercase()).count();
-        alpha_count >= 1
-            && alpha_count <= 2
+        (1..=2).contains(&alpha_count)
             && chars[alpha_count..].iter().all(|c| c.is_ascii_digit())
     }
 
@@ -2623,24 +2657,22 @@ impl Registry {
     // ── RS JMBG ──
     // Format: 13 digits, weighted checksum
     fn generate_rs(&self, rng: &mut impl Rng) -> String {
-        loop {
-            let dd: u8 = rng.gen_range(1..=28);
-            let mm: u8 = rng.gen_range(1..=12);
-            let yyy: u16 = rng.gen_range(0..=999);
-            let region: u8 = rng.gen_range(70..=99); // Serbia region codes
-            let seq: u16 = rng.gen_range(0..=999);
-            let base = format!("{:02}{:02}{:03}{:02}{:03}", dd, mm, yyy, region, seq);
-            let d: Vec<u8> = base.bytes().map(|b| b - b'0').collect();
-            let weights = [7u32, 6, 5, 4, 3, 2, 7, 6, 5, 4, 3, 2];
-            let sum: u32 = d
-                .iter()
-                .zip(weights.iter())
-                .map(|(&d, &w)| d as u32 * w)
-                .sum();
-            let r = 11 - (sum % 11);
-            let check = if r > 9 { 0u8 } else { r as u8 };
-            return format!("{}{}", base, check);
-        }
+        let dd: u8 = rng.gen_range(1..=28);
+        let mm: u8 = rng.gen_range(1..=12);
+        let yyy: u16 = rng.gen_range(0..=999);
+        let region: u8 = rng.gen_range(70..=99); // Serbia region codes
+        let seq: u16 = rng.gen_range(0..=999);
+        let base = format!("{:02}{:02}{:03}{:02}{:03}", dd, mm, yyy, region, seq);
+        let d: Vec<u8> = base.bytes().map(|b| b - b'0').collect();
+        let weights = [7u32, 6, 5, 4, 3, 2, 7, 6, 5, 4, 3, 2];
+        let sum: u32 = d
+            .iter()
+            .zip(weights.iter())
+            .map(|(&d, &w)| d as u32 * w)
+            .sum();
+        let r = 11 - (sum % 11);
+        let check = if r > 9 { 0u8 } else { r as u8 };
+        format!("{}{}", base, check)
     }
     fn validate_rs(&self, code: &str) -> bool {
         let c: String = code.chars().filter(|c| c.is_ascii_digit()).collect();
@@ -2942,7 +2974,7 @@ impl Registry {
             .zip(weights.iter())
             .map(|(&d, &w)| d as u32 * w)
             .sum();
-        sum % 10 == 0
+        sum.is_multiple_of(10)
     }
 
     // ── TZ TIN ──
@@ -2969,7 +3001,11 @@ impl Registry {
         let weights: [i32; 9] = [-1, 5, 7, 9, 4, 6, 10, 5, 7];
         let base: Vec<u8> = (0..9)
             .map(|i| {
-                if i == 0 { rng.gen_range(1..=9u8) } else { rng.gen_range(0..=9u8) }
+                if i == 0 {
+                    rng.gen_range(1..=9u8)
+                } else {
+                    rng.gen_range(0..=9u8)
+                }
             })
             .collect();
         let total: i32 = base
@@ -3042,7 +3078,11 @@ impl Registry {
         loop {
             let base: Vec<u8> = (0..9)
                 .map(|i| {
-                    if i == 0 { rng.gen_range(1..=9u8) } else { rng.gen_range(0..=9u8) }
+                    if i == 0 {
+                        rng.gen_range(1..=9u8)
+                    } else {
+                        rng.gen_range(0..=9u8)
+                    }
                 })
                 .collect();
             let total: u32 = base

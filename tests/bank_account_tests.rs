@@ -145,9 +145,7 @@ fn test_non_iban_countries_no_iban() {
     let registry = Registry::new();
     let mut rng = thread_rng();
     let opts = GenOptions::default();
-    let non_iban = [
-        "US", "CA", "MX", "AU", "IN", "JP", "CN", "ZA", "AR", "NG",
-    ];
+    let non_iban = ["US", "CA", "MX", "AU", "IN", "JP", "CN", "ZA", "AR", "NG"];
     for &cc in &non_iban {
         let result = registry.generate(cc, &opts, &mut rng).unwrap();
         assert!(

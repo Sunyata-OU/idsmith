@@ -38,7 +38,9 @@ pub fn generate(_opts: &GenOptions, rng: &mut impl Rng) -> AccountResult {
 
     AccountResult {
         country_code: "KR".into(),
-        country_name: crate::countries::get_country_name("KR").unwrap_or("Unknown").to_string(),
+        country_name: crate::countries::get_country_name("KR")
+            .unwrap_or("Unknown")
+            .to_string(),
         format_name: "Bank Account".into(),
         bank_code: None,
         branch_code: None,

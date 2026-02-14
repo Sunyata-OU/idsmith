@@ -436,7 +436,10 @@ impl DriverLicense {
             .generate(&opts, &mut rng)
             .map(DriverLicenseResult::from)
             .ok_or_else(|| {
-                Error::new(Status::GenericFailure, "Failed to generate driver's license")
+                Error::new(
+                    Status::GenericFailure,
+                    "Failed to generate driver's license",
+                )
             })
     }
 

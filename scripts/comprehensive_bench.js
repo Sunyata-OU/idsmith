@@ -1,5 +1,5 @@
 const path = require('path');
-const venvNodePath = path.join(__dirname, 'venv_node', 'node_modules');
+const venvNodePath = path.join(__dirname, '..', 'benchmarks', 'venv_node', 'node_modules');
 const idsmith = require(path.join(venvNodePath, 'idsmith'));
 const ibantools = require(path.join(venvNodePath, 'ibantools'));
 const cardValidator = require(path.join(venvNodePath, 'card-validator'));

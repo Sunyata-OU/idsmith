@@ -12,10 +12,12 @@ pub fn generate(rng: &mut rand::rngs::ThreadRng) -> String {
 
 pub fn validate(code: &str) -> bool {
     let clean = code.to_uppercase().replace("AL", "").replace(' ', "");
-    if clean.len() != 10 { return false; }
+    if clean.len() != 10 {
+        return false;
+    }
     let first = clean.chars().next().unwrap();
     let last = clean.chars().last().unwrap();
-    first >= 'A' && first <= 'M' &&
-    clean[1..9].chars().all(|c| c.is_ascii_digit()) &&
-    last >= 'A' && last <= 'Z'
+    ('A'..='M').contains(&first)
+        && clean[1..9].chars().all(|c| c.is_ascii_digit())
+        && last.is_ascii_uppercase()
 }
