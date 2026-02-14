@@ -26,8 +26,8 @@
     "node": ">=18"
   },
   "scripts": {
-    "build": "napi build --platform --release --manifest-path Cargo.toml",
-    "build:debug": "napi build --platform --manifest-path Cargo.toml",
+    "build": "napi build --platform --release",
+    "build:debug": "napi build --platform",
     "test": "node --test __test__/index.spec.mjs",
     "artifacts": "napi artifacts",
     "prepublishOnly": "napi prepublish -t npm",

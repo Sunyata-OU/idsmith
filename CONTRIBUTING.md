@@ -77,20 +77,14 @@ The workspace shares a single `Cargo.lock`. This is committed to git and ensures
 
 ## Release Process
 
-### Rust core → crates.io
-1. Bump `version` in root `Cargo.toml`
-2. Push to `main` → release workflow creates GitHub release
-3. GitHub release triggers `publish.yml` → publishes to crates.io
+All three packages publish from a single version bump:
 
-### Python → PyPI
-1. Bump `version` in `bindings/python/pyproject.toml`
-2. Create a GitHub release with tag `python-v0.x.x`
-3. Triggers `python-publish.yml` → builds wheels and publishes to PyPI
-
-### Node.js → npm
-1. Bump `version` in `bindings/node/package.json`
-2. Create a GitHub release with tag `node-v0.x.x`
-3. Triggers `node-publish.yml` → builds native modules and publishes to npm
+1. Bump `version` in root `Cargo.toml`, `bindings/python/pyproject.toml`, and `bindings/node/package.json`
+2. Push to `main` → `release.yml` detects version change, builds binaries, creates GitHub release
+3. The GitHub release triggers all three publish workflows:
+   - `publish.yml` → crates.io
+   - `python-publish.yml` → PyPI (builds wheels for Linux/macOS/Windows)
+   - `node-publish.yml` → npm (builds native modules for all platforms)
 
 ### Required secrets
 - `CARGO_REGISTRY_TOKEN` — crates.io API token

@@ -8,24 +8,8 @@ permissions:
   contents: read
 
 jobs:
-  check-tag:
-    name: Check if Node release
-    runs-on: ubuntu-latest
-    outputs:
-      is_node: ${{ steps.check.outputs.is_node }}
-    steps:
-      - id: check
-        run: |
-          if [[ "${{ github.event.release.tag_name }}" == node-v* ]]; then
-            echo "is_node=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "is_node=false" >> "$GITHUB_OUTPUT"
-          fi
-
   build:
     name: Build ${{ matrix.target }}
-    needs: check-tag
-    if: needs.check-tag.outputs.is_node == 'true'
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -78,8 +62,7 @@ jobs:
 
   publish:
     name: Publish to npm
-    needs: [check-tag, build]
-    if: needs.check-tag.outputs.is_node == 'true'
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

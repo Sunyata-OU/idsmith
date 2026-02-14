@@ -36,7 +36,7 @@ jobs:
 
       - uses: dtolnay/rust-toolchain@stable
 
-      - name: Install maturin and pytest
+      - name: Install tools
         run: pip install maturin[patchelf] pytest
 
       - name: Build and install
