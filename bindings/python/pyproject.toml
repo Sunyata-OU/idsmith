@@ -4,7 +4,7 @@ build-backend = "maturin"
 
 [project]
 name = "idsmith"
-version = "0.4.1"
+version = "0.4.0"
 description = "Validate and generate checksum-correct IBANs, personal IDs, bank accounts, credit cards, SWIFT/BIC, company IDs, driver's licenses, tax IDs, and passports"
 authors = [
     {name = "Tony Benoy", email = "me@tonybenoy.com"}
