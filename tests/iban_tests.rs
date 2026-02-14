@@ -1,7 +1,7 @@
 use rand::thread_rng;
 
 // We need to reference the crate; Cargo uses the package name with hyphens replaced by underscores.
-use eu_test_data_generator::iban;
+use idsmith::iban;
 
 const ALL_IBAN_COUNTRIES: &[&str] = &[
     "AD", "AE", "AL", "AT", "AX", "AZ", "BA", "BE", "BG", "BH", "BR", "BY", "CH", "CR", "CY", "CZ",

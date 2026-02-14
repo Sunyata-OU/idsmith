@@ -95,7 +95,7 @@ jobs:
         if: matrix.archive == 'tar.gz'
         run: |
           cd target/${{ matrix.target }}/release
-          tar czf ../../../eu-test-data-generator-${{ matrix.target }}.tar.gz eu-test-data-generator
+          tar czf ../../../idsmith-${{ matrix.target }}.tar.gz idsmith
           cd ../../..
 
       - name: Package (windows)
@@ -103,13 +103,13 @@ jobs:
         shell: bash
         run: |
           cd target/${{ matrix.target }}/release
-          7z a ../../../eu-test-data-generator-${{ matrix.target }}.zip eu-test-data-generator.exe
+          7z a ../../../idsmith-${{ matrix.target }}.zip idsmith.exe
           cd ../../..
 
       - uses: actions/upload-artifact@v4
         with:
-          name: eu-test-data-generator-${{ matrix.target }}
-          path: eu-test-data-generator-${{ matrix.target }}.${{ matrix.archive }}
+          name: idsmith-${{ matrix.target }}
+          path: idsmith-${{ matrix.target }}.${{ matrix.archive }}
 
   release:
     name: Create Release

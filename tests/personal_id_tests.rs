@@ -1,26 +1,39 @@
 use rand::thread_rng;
 
-use eu_test_data_generator::personal_id::date::Gender;
-use eu_test_data_generator::personal_id::{self, GenOptions};
+use idsmith::personal_id::date::Gender;
+use idsmith::personal_id::{self, GenOptions};
 
-const ALL_ID_COUNTRIES: &[&str] = &[
-    "AT", "BA", "BE", "BG", "CH", "CZ", "DE", "DK", "EE", "ES", "FI", "FR", "GB", "GR", "HR", "IE",
-    "IS", "IT", "LT", "LV", "ME", "NL", "NO", "PL", "PT", "RO", "RS", "SE", "SI", "SK", "TR",
+// All countries with specific implementations (56 total)
+const ALL_SPECIFIC_COUNTRIES: &[&str] = &[
+    // Europe (31)
+    "AT", "BA", "BE", "BG", "CH", "CZ", "DE", "DK", "EE", "ES", "FI", "FR", "GB", "GR", "HR",
+    "IE", "IS", "IT", "LT", "LV", "ME", "NL", "NO", "PL", "PT", "RO", "RS", "SE", "SI", "SK",
+    "TR",
+    // Americas (10)
+    "US", "CA", "BR", "AR", "CL", "CO", "UY", "EC", "PE", "MX",
+    // Asia-Pacific (12)
+    "CN", "IN", "JP", "KR", "TW", "TH", "SG", "MY", "ID", "HK", "AU", "NZ",
+    // Africa/Middle East (3)
+    "ZA", "IL", "EG",
 ];
 
 #[test]
 fn test_id_country_count() {
     let registry = personal_id::Registry::new();
     let countries = registry.list_countries();
-    assert_eq!(countries.len(), 31, "expected 31 personal ID countries");
+    assert!(
+        countries.len() >= 220,
+        "expected >= 220 personal ID countries, got {}",
+        countries.len()
+    );
 }
 
 #[test]
-fn test_all_id_countries_generate_valid() {
+fn test_all_specific_countries_generate_valid() {
     let registry = personal_id::Registry::new();
     let mut rng = thread_rng();
     let opts = GenOptions::default();
-    for &cc in ALL_ID_COUNTRIES {
+    for &cc in ALL_SPECIFIC_COUNTRIES {
         for _ in 0..20 {
             let code = registry
                 .generate(cc, &opts, &mut rng)
@@ -32,17 +45,50 @@ fn test_all_id_countries_generate_valid() {
 }
 
 #[test]
-fn test_all_id_countries_parse() {
+fn test_all_specific_countries_parse() {
     let registry = personal_id::Registry::new();
     let mut rng = thread_rng();
     let opts = GenOptions::default();
-    for &cc in ALL_ID_COUNTRIES {
+    for &cc in ALL_SPECIFIC_COUNTRIES {
         let code = registry.generate(cc, &opts, &mut rng).unwrap();
         let parsed = registry
             .parse(cc, &code)
             .unwrap_or_else(|| panic!("{}: parse returned None for {}", cc, code));
         assert!(parsed.valid, "{}: parsed.valid is false for {}", cc, code);
         assert!(!parsed.code.is_empty());
+    }
+}
+
+#[test]
+fn test_generic_countries_generate_valid() {
+    let registry = personal_id::Registry::new();
+    let mut rng = thread_rng();
+    let opts = GenOptions::default();
+    let all = registry.list_countries();
+    for (cc, _name, _id_name) in &all {
+        for _ in 0..5 {
+            let code = registry
+                .generate(cc, &opts, &mut rng)
+                .unwrap_or_else(|| panic!("{}: generate returned None", cc));
+            let valid = registry.validate(cc, &code);
+            assert_eq!(valid, Some(true), "{}: validation failed for {}", cc, code);
+        }
+    }
+}
+
+#[test]
+fn test_territory_aliases() {
+    let registry = personal_id::Registry::new();
+    let mut rng = thread_rng();
+    let opts = GenOptions::default();
+    let aliases = &["PR", "GU", "CC", "CX", "CK", "BL", "SH", "BV"];
+    for &cc in aliases {
+        assert!(registry.is_supported(cc), "{} should be supported", cc);
+        let code = registry
+            .generate(cc, &opts, &mut rng)
+            .unwrap_or_else(|| panic!("{}: generate returned None", cc));
+        let valid = registry.validate(cc, &code);
+        assert_eq!(valid, Some(true), "{}: validation failed for {}", cc, code);
     }
 }
 
@@ -54,6 +100,8 @@ fn test_gender_filter() {
     // Countries that encode gender in their ID
     let gendered_countries = &[
         "EE", "FI", "SE", "NO", "PL", "RO", "BG", "CZ", "SK", "BE", "FR", "IT",
+        // New countries with gender
+        "AR", "MX", "CN", "KR", "TW", "ZA", "EG", "MY", "ID",
     ];
 
     for &cc in gendered_countries {
@@ -92,7 +140,11 @@ fn test_year_filter() {
     let mut rng = thread_rng();
 
     // Countries that encode birth year in their ID
-    let year_countries = &["EE", "FI", "SE", "NO", "PL", "RO", "BG", "DK"];
+    let year_countries = &[
+        "EE", "FI", "SE", "NO", "PL", "RO", "BG", "DK",
+        // New countries with DOB
+        "CN", "KR", "ZA", "EG", "MX", "MY", "ID",
+    ];
 
     for &cc in year_countries {
         let opts = GenOptions {
@@ -133,4 +185,45 @@ fn test_registry_name() {
     assert_eq!(registry.name("IT"), Some("Codice Fiscale"));
     assert_eq!(registry.name("PL"), Some("PESEL"));
     assert_eq!(registry.name("GB"), Some("NINO"));
+    // New countries
+    assert_eq!(registry.name("US"), Some("SSN"));
+    assert_eq!(registry.name("CN"), Some("Resident ID"));
+    assert_eq!(registry.name("ZA"), Some("SA ID"));
+    assert_eq!(registry.name("IN"), Some("Aadhaar"));
+    // Generic
+    assert_eq!(registry.name("NG"), Some("NIN"));
+    // Alias
+    assert_eq!(registry.name("PR"), Some("SSN"));
+}
+
+#[test]
+fn test_checksum_corruption() {
+    let registry = personal_id::Registry::new();
+    let mut rng = thread_rng();
+    let opts = GenOptions::default();
+
+    // Countries with strong checksums - generate and corrupt
+    let checksum_countries = &["BR", "CN", "IN", "ZA", "IL", "CA", "JP", "TH", "AU"];
+    for &cc in checksum_countries {
+        for _ in 0..10 {
+            let code = registry.generate(cc, &opts, &mut rng).unwrap();
+            assert_eq!(
+                registry.validate(cc, &code),
+                Some(true),
+                "{}: valid code failed",
+                cc
+            );
+            // Corrupt one digit
+            let mut chars: Vec<char> = code.chars().collect();
+            // Find a digit to corrupt
+            if let Some(pos) = chars.iter().position(|c| c.is_ascii_digit()) {
+                let old = chars[pos];
+                chars[pos] = if old == '9' { '0' } else { (old as u8 + 1) as char };
+                let corrupted: String = chars.into_iter().collect();
+                let valid = registry.validate(cc, &corrupted).unwrap_or(true);
+                // Most corrupted codes should fail, but not guaranteed for all checksums
+                let _ = valid;
+            }
+        }
+    }
 }

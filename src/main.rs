@@ -1,13 +1,13 @@
 use std::io::Write;
 
 use clap::{Parser, Subcommand};
-use rand::thread_rng;
+use rand::{thread_rng, Rng};
 
-use eu_test_data_generator::{csv as csv_fmt, iban, personal_id};
+use idsmith::{bank_account, csv as csv_fmt, iban, personal_id};
 
 #[derive(Parser)]
-#[command(name = "eu-test-data-generator")]
-#[command(about = "Generate valid test IBANs and personal ID codes for European countries")]
+#[command(name = "idsmith")]
+#[command(about = "Forge valid test IBANs, personal IDs, and bank accounts for 252 countries")]
 struct Cli {
     #[command(subcommand)]
     command: Commands,
@@ -22,6 +22,21 @@ enum Commands {
         /// Number of IBANs to generate
         #[arg(default_value = "1")]
         count: u32,
+        /// Export as CSV (optionally to a file path)
+        #[arg(long, num_args = 0..=1, default_missing_value = "-")]
+        csv: Option<String>,
+    },
+    /// Generate random bank account numbers
+    Account {
+        /// Number of accounts to generate
+        #[arg(default_value = "1")]
+        count: u32,
+        /// Country code (e.g., US, AU, GB). Random if omitted.
+        #[arg(long)]
+        country: Option<String>,
+        /// List all supported countries
+        #[arg(long)]
+        list: bool,
         /// Export as CSV (optionally to a file path)
         #[arg(long, num_args = 0..=1, default_missing_value = "-")]
         csv: Option<String>,
@@ -120,6 +135,94 @@ fn main() {
                 }
             }
         }
+        Commands::Account {
+            count,
+            country,
+            list,
+            csv,
+        } => {
+            let registry = bank_account::Registry::new();
+
+            if list {
+                println!(
+                    "{:<6} {:<25} {:<30} {}",
+                    "Code", "Country", "Format", "IBAN"
+                );
+                println!("{}", "-".repeat(70));
+                for (code, country_name, format_name, has_iban) in registry.list_countries() {
+                    println!(
+                        "{:<6} {:<25} {:<30} {}",
+                        code,
+                        country_name,
+                        format_name,
+                        if has_iban { "Yes" } else { "No" }
+                    );
+                }
+                return;
+            }
+
+            let opts = bank_account::GenOptions::default();
+
+            let country = country.map(|c| c.to_uppercase());
+            if let Some(ref c) = country {
+                if !registry.is_supported(c) {
+                    eprintln!("Unsupported country: {}", c);
+                    std::process::exit(1);
+                }
+            }
+
+            let mut out: Option<Box<dyn Write>> = csv.as_deref().map(csv_writer);
+            if let Some(ref mut w) = out {
+                writeln!(w, "{}", csv_fmt::ACCOUNT_HEADER).unwrap();
+            }
+
+            for _ in 0..count {
+                let result = match &country {
+                    Some(c) => registry.generate(c, &opts, &mut rng).unwrap(),
+                    None => {
+                        let countries = registry.list_countries();
+                        let pick = countries[rng.gen_range(0..countries.len())].0;
+                        registry.generate(pick, &opts, &mut rng).unwrap()
+                    }
+                };
+
+                if let Some(ref mut w) = out {
+                    writeln!(w, "{}", csv_fmt::account_row(&result)).unwrap();
+                } else {
+                    println!(
+                        "{} - {} - {}:",
+                        result.country_code, result.country_name, result.format_name
+                    );
+                    let mut parts: Vec<String> = Vec::new();
+                    if let Some(ref bank) = result.bank_code {
+                        parts.push(format!("Bank: {}", bank));
+                    }
+                    if let Some(ref branch) = result.branch_code {
+                        parts.push(format!("Branch: {}", branch));
+                    }
+                    parts.push(format!("Account: {}", result.account_number));
+                    if let Some(ref check) = result.check_digits {
+                        parts.push(format!("Check: {}", check));
+                    }
+                    if let Some(ref iban_code) = result.iban {
+                        parts.push(format!("IBAN: {}", iban::format_iban(iban_code)));
+                    }
+                    parts.push(format!("Formatted: {}", result.formatted));
+                    parts.push(format!("Raw: {}", result.raw));
+                    parts.push(format!(
+                        "valid: {}",
+                        if result.valid { "True" } else { "False" }
+                    ));
+                    println!("  {}", parts.join(" | "));
+                }
+            }
+
+            if let Some(path) = csv.as_deref() {
+                if path != "-" {
+                    eprintln!("Wrote {} rows to {}", count, path);
+                }
+            }
+        }
         Commands::Id {
             count,
             country,
@@ -131,10 +234,10 @@ fn main() {
             let registry = personal_id::Registry::new();
 
             if list {
-                println!("{:<6} {:<25}", "Code", "ID Name");
-                println!("{}", "-".repeat(31));
-                for (code, name) in registry.list_countries() {
-                    println!("{:<6} {}", code, name);
+                println!("{:<6} {:<25} {}", "Code", "Country", "ID Name");
+                println!("{}", "-".repeat(55));
+                for (code, country_name, name) in registry.list_countries() {
+                    println!("{:<6} {:<25} {}", code, country_name, name);
                 }
                 return;
             }
@@ -144,8 +247,11 @@ fn main() {
                 Some(n) => n.to_string(),
                 None => {
                     eprintln!("Unsupported country: {}", country);
-                    let countries: Vec<_> =
-                        registry.list_countries().iter().map(|(c, _)| *c).collect();
+                    let countries: Vec<_> = registry
+                        .list_countries()
+                        .iter()
+                        .map(|(c, _, _)| *c)
+                        .collect();
                     eprintln!("Supported: {}", countries.join(", "));
                     std::process::exit(1);
                 }

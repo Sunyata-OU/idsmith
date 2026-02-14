@@ -53,7 +53,7 @@ fn calculate_check_digits(country_code: &str, bban: &str) -> String {
 ///
 /// ```
 /// use rand::thread_rng;
-/// use eu_test_data_generator::iban;
+/// use idsmith::iban;
 ///
 /// let mut rng = thread_rng();
 /// let code = iban::generate_iban(Some("DE"), &mut rng).unwrap();
@@ -84,7 +84,7 @@ pub fn generate_iban(country: Option<&str>, rng: &mut impl Rng) -> Result<String
 /// # Examples
 ///
 /// ```
-/// use eu_test_data_generator::iban;
+/// use idsmith::iban;
 /// assert_eq!(iban::format_iban("DE89370400440532013000"), "DE89 3704 0044 0532 0130 00");
 /// ```
 pub fn format_iban(iban: &str) -> String {
@@ -103,7 +103,7 @@ pub fn format_iban(iban: &str) -> String {
 /// # Examples
 ///
 /// ```
-/// use eu_test_data_generator::iban;
+/// use idsmith::iban;
 /// assert!(iban::validate_iban("GB29 NWBK 6016 1331 9268 19"));
 /// assert!(!iban::validate_iban("GB29 NWBK 6016 1331 9268 18"));
 /// ```
