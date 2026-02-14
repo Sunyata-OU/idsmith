@@ -85,7 +85,9 @@ impl Registry {
         let formatted = self.format(&brand_name, &number);
 
         let cvv_len = if brand_name == "amex" { 4 } else { 3 };
-        let cvv: String = (0..cvv_len).map(|_| (b'0' + rng.gen_range(0..=9)) as char).collect();
+        let cvv: String = (0..cvv_len)
+            .map(|_| (b'0' + rng.gen_range(0..=9)) as char)
+            .collect();
 
         let now = std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)

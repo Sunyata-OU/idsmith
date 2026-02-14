@@ -41,11 +41,11 @@ jobs:
 
       - name: Build wheel
         working-directory: bindings/python
-        run: maturin build --release --find-interpreter
+        run: maturin build --release --find-interpreter --out dist
 
       - name: Install wheel
         working-directory: bindings/python
-        run: pip install --find-links target/wheels idsmith
+        run: pip install --find-links dist idsmith
 
       - name: Run tests
         working-directory: bindings/python

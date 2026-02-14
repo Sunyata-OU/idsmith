@@ -513,7 +513,12 @@ fn main() {
                     if print_it {
                         println!(
                             "{} ({}): {}  CVV: {}  Exp: {}  (valid: {})",
-                            result.brand, result.formatted, result.number, result.cvv, result.expiry, result.valid
+                            result.brand,
+                            result.formatted,
+                            result.number,
+                            result.cvv,
+                            result.expiry,
+                            result.valid
                         );
                     }
                 }
