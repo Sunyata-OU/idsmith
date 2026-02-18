@@ -1,6 +1,6 @@
 {
   "name": "idsmith",
-  "version": "0.5.0",
+  "version": "0.5.2",
   "description": "Validate and generate checksum-correct IBANs, personal IDs, bank accounts, credit cards, SWIFT/BIC, company IDs, driver's licenses, tax IDs, and passports",
   "main": "index.js",
   "types": "index.d.ts",
@@ -43,11 +43,11 @@
     "@napi-rs/cli": "^2.18.0"
   },
   "optionalDependencies": {
-    "idsmith-win32-x64-msvc": "0.5.0",
-    "idsmith-darwin-x64": "0.5.0",
-    "idsmith-linux-x64-gnu": "0.5.0",
-    "idsmith-darwin-arm64": "0.5.0",
-    "idsmith-linux-arm64-gnu": "0.5.0",
-    "idsmith-linux-arm64-musl": "0.5.0"
+    "idsmith-win32-x64-msvc": "0.5.2",
+    "idsmith-darwin-x64": "0.5.2",
+    "idsmith-linux-x64-gnu": "0.5.2",
+    "idsmith-darwin-arm64": "0.5.2",
+    "idsmith-linux-arm64-gnu": "0.5.2",
+    "idsmith-linux-arm64-musl": "0.5.2"
   }
 }
