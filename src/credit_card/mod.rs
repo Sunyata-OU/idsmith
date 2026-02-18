@@ -17,6 +17,10 @@ pub struct CardResult {
 #[derive(Debug, Clone, Default)]
 pub struct GenOptions {
     pub brand: Option<String>,
+    /// Current year (last two digits, e.g. 26 for 2026).
+    /// When `None`, the year is derived from `std::time::SystemTime`.
+    /// Set this explicitly when targeting WASM where `SystemTime` is unavailable.
+    pub current_year: Option<u16>,
 }
 
 pub struct Registry;
@@ -89,12 +93,16 @@ impl Registry {
             .map(|_| (b'0' + rng.gen_range(0..=9)) as char)
             .collect();
 
-        let now = std::time::SystemTime::now()
-            .duration_since(std::time::UNIX_EPOCH)
-            .unwrap()
-            .as_secs();
-        let current_year = (1970 + now / 31_536_000) % 100;
-        let current_year = current_year as u16;
+        let current_year = match opts.current_year {
+            Some(y) => y,
+            None => {
+                let now = std::time::SystemTime::now()
+                    .duration_since(std::time::UNIX_EPOCH)
+                    .unwrap()
+                    .as_secs();
+                ((1970 + now / 31_536_000) % 100) as u16
+            }
+        };
         let year = rng.gen_range(current_year..=current_year + 5);
         let month = rng.gen_range(1..=12u8);
         let expiry = format!("{:02}/{:02}", month, year);

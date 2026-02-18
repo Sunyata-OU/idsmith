@@ -40,6 +40,7 @@ fn test_specific_brands() {
     for brand in brands {
         let opts = GenOptions {
             brand: Some(brand.to_string()),
+            ..Default::default()
         };
         let result = registry.generate(&opts, &mut rng).expect(brand);
         assert_eq!(result.brand.to_lowercase(), brand);
@@ -58,6 +59,7 @@ fn test_amex_cvv_length() {
     let mut rng = thread_rng();
     let opts = GenOptions {
         brand: Some("amex".to_string()),
+        ..Default::default()
     };
     let result = registry.generate(&opts, &mut rng).unwrap();
     assert_eq!(result.cvv.len(), 4, "Amex CVV should be 4 digits");
@@ -70,6 +72,7 @@ fn test_non_amex_cvv_length() {
     for brand in ["visa", "mastercard", "discover", "jcb", "diners"] {
         let opts = GenOptions {
             brand: Some(brand.to_string()),
+            ..Default::default()
         };
         let result = registry.generate(&opts, &mut rng).unwrap();
         assert_eq!(result.cvv.len(), 3, "{} CVV should be 3 digits", brand);
@@ -82,6 +85,7 @@ fn test_amex_length() {
     let mut rng = thread_rng();
     let opts = GenOptions {
         brand: Some("amex".to_string()),
+        ..Default::default()
     };
     let result = registry.generate(&opts, &mut rng).unwrap();
     assert_eq!(result.number.len(), 15);
@@ -93,6 +97,7 @@ fn test_diners_length() {
     let mut rng = thread_rng();
     let opts = GenOptions {
         brand: Some("diners".to_string()),
+        ..Default::default()
     };
     let result = registry.generate(&opts, &mut rng).unwrap();
     assert_eq!(result.number.len(), 14);

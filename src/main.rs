@@ -578,6 +578,7 @@ fn main() {
 
             let opts = credit_card::GenOptions {
                 brand: brand.clone(),
+                current_year: None,
             };
 
             let mut out_csv: Option<Box<dyn Write>> = csv.as_deref().map(csv_writer);

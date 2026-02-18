@@ -1,6 +1,6 @@
 [package]
 name = "idsmith"
-version = "0.5.0"
+version = "0.5.1"
 edition = "2021"
 authors = ["Tony Benoy <me@tonybenoy.com>"]
 description = "Validate and generate checksum-correct IBANs, personal IDs, bank accounts, credit cards, SWIFT/BIC, company IDs, driver's licenses, tax IDs, and passports."
